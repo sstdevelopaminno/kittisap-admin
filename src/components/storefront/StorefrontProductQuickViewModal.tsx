@@ -196,7 +196,12 @@ function withLocale(locale: AppLocale, path: string, useLocalePrefix: boolean) {
   return `/${locale}${path}`;
 }
 
-export function StorefrontProductQuickViewModal({
+export function StorefrontProductQuickViewModal(props: StorefrontProductQuickViewModalProps) {
+  if (!props.open || !props.item) return null;
+  return <StorefrontProductQuickViewInner key={props.item.id} {...props} />;
+}
+
+function StorefrontProductQuickViewInner({
   open,
   item,
   locale,
@@ -259,14 +264,6 @@ export function StorefrontProductQuickViewModal({
     img.loading = "eager";
     img.src = normalized;
   }, []);
-
-  useEffect(() => {
-    if (!open || !item) {
-      return;
-    }
-    setActiveImageIndex(0);
-    lastNavigateAtRef.current = 0;
-  }, [item?.id, open]);
 
   useEffect(() => {
     if (!open || galleryImages.length === 0) {
