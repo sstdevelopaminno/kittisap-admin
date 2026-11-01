@@ -72,7 +72,6 @@ export function PremiumHeroCarousel({ slides, locale, videoUrl }: Props) {
   const onLeave = () => {
     rootRef.current?.style.setProperty("--hero-depth-x", "0px");
     rootRef.current?.style.setProperty("--hero-depth-y", "0px");
-    setInteracting(false);
   };
 
   const changeTo = (index: number) => {
@@ -104,14 +103,14 @@ export function PremiumHeroCarousel({ slides, locale, videoUrl }: Props) {
       aria-roledescription="carousel"
       aria-label={locale === "th" ? "ภาพรถ ATV แบบสไลด์" : "ATV showcase carousel"}
       onMouseMove={onMove}
-      onMouseEnter={() => setInteracting(true)}
       onMouseLeave={onLeave}
       onFocusCapture={() => setInteracting(true)}
       onBlurCapture={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) setInteracting(false); }}
-      onTouchStart={(event) => { touchStartRef.current = event.touches[0]?.clientX ?? null; }}
+      onTouchStart={(event) => { touchStartRef.current = event.touches[0]?.clientX ?? null; setInteracting(true); }}
       onTouchEnd={(event) => {
         const from = touchStartRef.current;
         touchStartRef.current = null;
+        setInteracting(false);
         if (from === null || slides.length < 2) return;
         const distance = (event.changedTouches[0]?.clientX ?? from) - from;
         if (distance > 65) previous();
