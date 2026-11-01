@@ -7,6 +7,8 @@ $ErrorActionPreference = "Stop"
 
 $legacyVercelProjectId = "prj_zjTdEX1n3ztYAlBl1Yk0UtFKsD2B"
 $legacyVercelTeamId = "team_Od4IiIaMTFI1i7jYCni8Q38d"
+$expectedVercelProjectId = "prj_cjrjn48ITrflxbcKs8C9PJ6O9RKO"
+$expectedVercelTeamId = "team_ZKmv6uQSU9QUyP08mxAr2YDI"
 $vercelLinkPath = ".\.vercel\project.json"
 
 if (-not (Get-Command vercel -ErrorAction SilentlyContinue)) {
@@ -23,6 +25,13 @@ if (
   $vercelLink.orgId -eq $legacyVercelTeamId
 ) {
   throw "Release blocked: this repository is still linked to the retired Vercel target."
+}
+
+if (
+  $vercelLink.projectId -ne $expectedVercelProjectId -or
+  $vercelLink.orgId -ne $expectedVercelTeamId
+) {
+  throw "Release blocked: linked Vercel project/team does not match the approved production target."
 }
 
 powershell -NoProfile -ExecutionPolicy Bypass -File ".\scripts\sync-github.ps1" -Branch $Branch -Message $Message
