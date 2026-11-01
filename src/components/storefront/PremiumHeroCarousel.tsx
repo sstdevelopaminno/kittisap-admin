@@ -85,7 +85,30 @@ export function PremiumHeroCarousel({ slides, locale, videoUrl }: Props) {
       ? { prev: "ພາບກ່ອນ", next: "ພາບຕໍ່ໄປ", pause: "ຢຸດສະໄລ", play: "ຫຼິ້ນສະໄລ", slide: "ເລືອກຮູບ", view: "ເບິ່ງລຸ້ນນີ້" }
       : { prev: "Previous image", next: "Next image", pause: "Pause slides", play: "Play slides", slide: "Show image", view: "Explore this model" };
 
-  const isVideo = Boolean(videoUrl && /^https:\/\//i.test(videoUrl) && /\.(mp4|webm)(?:[?#]|$)/i.test(videoUrl));
+  const isVideo = Boolean(videoUrl && /^(https:\/\/|\/)/i.test(videoUrl) && /\.(mp4|webm)(?:[?#]|$)/i.test(videoUrl));
+
+  // A video is the hero. Never layer moving photo slides over the video.
+  // Keep a bright photo fallback when no video has been configured or playback fails.
+  if (isVideo && !videoFailed) {
+    return (
+      <div className="premium-hero-video-shell absolute inset-0 overflow-hidden">
+        <video
+          className="premium-hero-video-frame absolute inset-0 h-full w-full object-cover"
+          src={videoUrl!}
+          autoPlay={motionOK}
+          muted
+          loop
+          playsInline
+          preload="metadata"
+          poster={slides[0]?.src}
+          onError={() => setVideoFailed(true)}
+          aria-hidden="true"
+        />
+        <div className="premium-hero-video-shade pointer-events-none absolute inset-0" aria-hidden="true" />
+        <div className="premium-hero-video-sheen pointer-events-none absolute inset-0" aria-hidden="true" />
+      </div>
+    );
+  }
 
   if (slides.length === 0 && !isVideo) {
     return (
@@ -118,20 +141,6 @@ export function PremiumHeroCarousel({ slides, locale, videoUrl }: Props) {
       }}
     >
       <div className="premium-hero-atmosphere absolute inset-0" aria-hidden="true" />
-      {isVideo && !videoFailed ? (
-        <video
-          className="premium-hero-video absolute inset-0 h-full w-full object-cover"
-          src={videoUrl!}
-          autoPlay={motionOK}
-          muted
-          loop
-          playsInline
-          preload="metadata"
-          poster={slides[0]?.src}
-          onError={() => setVideoFailed(true)}
-          aria-hidden="true"
-        />
-      ) : null}
       {(slides.length ? slides : []).map((slide, i) => {
         const selected = i === activeIndex;
         const adjacent = i === (activeIndex + 1) % slides.length || i === (activeIndex - 1 + slides.length) % slides.length;
