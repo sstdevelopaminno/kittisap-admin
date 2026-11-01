@@ -490,8 +490,14 @@ export async function MarketingLandingPage({
         ? "ສົມທົບປະສິດທິພາບ ການບໍລິການ ແລະ ຄວາມໄວ້ວາງໃຈ"
         : whyChooseUsSettings.sectionTagline,
   );
-  const heroImageUrl = bannerSettings.imageUrl || showroomItems[0]?.coverUrl || null;
-  const heroImageAlt = localizedHeroTitle || showroomItems[0]?.title || "Banner image";
+  // The legacy promotional banner has words baked into its pixels. A clean product
+  // photograph avoids duplicated, non-localizable text in the background.
+  // Admins can change the hero vehicle by updating the first featured product image.
+  const heroVehicle = showroomItems.find((item) => Boolean(item.coverUrl));
+  const heroImageUrl = heroVehicle?.coverUrl ?? null;
+  const heroImageAlt = heroVehicle?.title
+    ? `${heroVehicle.title} — KITTISAP ATV`
+    : "KITTISAP ATV showroom";
   const origin = "https://kittisap-admin.vercel.app";
   const structuredData = {
     "@context": "https://schema.org",
