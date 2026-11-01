@@ -10,8 +10,8 @@ Platform ownership and migration status are recorded in
 
 - GitHub: `https://github.com/sstdevelopaminno/kittisap-admin.git`
 - Default branch: `main`
-- Vercel: use only the new `sstdevelopaminno` account/team target recorded in
-  `docs/deployment-ownership.md`
+- Vercel: `sstdevelopaminnos-projects/kittisap-admin`
+- Production: `https://kittisap-admin.vercel.app`
 - Supabase: keep the existing project `zbedxvzrbotwngxaktgj`
 
 Do not deploy to the legacy `parch009harmonic-hash` GitHub or Vercel targets.

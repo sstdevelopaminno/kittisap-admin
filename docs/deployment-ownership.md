@@ -20,12 +20,19 @@ this project and must not be used as the deployment source.
 - Account email: `sstdevelopaminno@gmail.com`
 - Account username: `sstdevelopaminno`
 - Team slug: `sstdevelopaminnos-projects`
-- Project name/ID: record here after the new project is created and verified
-- Production URL: record here after the new deployment is assigned
+- Team ID: `team_ZKmv6uQSU9QUyP08mxAr2YDI`
+- Project name: `kittisap-admin`
+- Project ID: `prj_cjrjn48ITrflxbcKs8C9PJ6O9RKO`
+- Production URL: `https://kittisap-admin.vercel.app`
+- Git source: `sstdevelopaminno/kittisap-admin`, branch `main`
+- Verified production deployment: `dpl_EfokkMC5L3aweSjsHEHVYiHQNHXK`
 
 Before deploying, run `vercel project inspect --non-interactive` from the
 repository root. Deploy only after the returned owner and project match the new
 target above.
+
+The production deployment was verified `READY` on 2026-11-01. The home page,
+public storefront settings API, and public products API returned HTTP 200.
 
 The following legacy Vercel target is retired and must not receive new
 deployments:
