@@ -1,4 +1,4 @@
-import Image from "next/image";
+import { PremiumHeroCarousel, type CinematicHeroSlide } from "./PremiumHeroCarousel";
 import Link from "next/link";
 
 import type { AppLocale } from "../../../lib/i18n/locale";
@@ -7,8 +7,8 @@ import type { WebBannerSettings } from "../../../lib/types/web-settings";
 type PremiumHomeHeroProps = {
   settings: WebBannerSettings;
   locale: AppLocale;
-  imageUrl: string | null;
-  imageAlt: string;
+  slides: CinematicHeroSlide[];
+  videoUrl?: string | null;
   eyebrow: string;
   title: string;
   description: string;
@@ -21,8 +21,8 @@ type PremiumHomeHeroProps = {
 export function PremiumHomeHero({
   settings,
   locale,
-  imageUrl,
-  imageAlt,
+  slides,
+  videoUrl,
   eyebrow,
   title,
   description,
@@ -43,7 +43,6 @@ export function PremiumHomeHero({
       : settings.contentAlign === "center"
         ? "justify-center"
         : "justify-start";
-  const motionClass = settings.imageMotion === "none" ? "" : `banner-motion-${settings.imageMotion}`;
   const effectClass =
     settings.textEffect === "gradient"
       ? "bg-gradient-to-r from-[#fff4d3] via-[#e9bf6a] to-[#ae7c31] bg-clip-text text-transparent"
@@ -63,30 +62,10 @@ export function PremiumHomeHero({
     <section id="showroom" className="premium-hero relative isolate w-full overflow-hidden" aria-label={eyebrow}>
       <div
         className="premium-hero-media absolute inset-0"
-        style={{
-          background: `linear-gradient(125deg, ${settings.backgroundFrom}, ${settings.backgroundTo})`,
-          borderColor: settings.imageFrameEnabled ? settings.imageFrameColor : "transparent",
-          borderTopWidth: settings.imageFrameEnabled ? Math.min(settings.imageFrameBorderWidthPx, 4) : 0,
-        }}
+        style={{ background: `linear-gradient(125deg, ${settings.backgroundFrom}, ${settings.backgroundTo})` }}
       >
-        <div className="premium-hero-vehicle-aura pointer-events-none absolute inset-0" />
-        {imageUrl ? (
-          <div className="premium-hero-vehicle-stage absolute inset-y-0 right-0 overflow-hidden">
-            <Image
-              src={imageUrl}
-              alt={imageAlt}
-              fill
-              priority
-              fetchPriority="high"
-              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 85vw, 65vw"
-              className={`premium-hero-photo object-contain ${motionClass}`}
-            />
-          </div>
-        ) : (
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_75%_30%,rgba(205,151,49,0.48),transparent_45%),linear-gradient(125deg,#302213,#090909_75%)]" />
-        )}
+        <PremiumHeroCarousel slides={slides} locale={locale} videoUrl={videoUrl} />
       </div>
-      <div className="premium-hero-shade pointer-events-none absolute inset-0" />
       <div className="premium-hero-line pointer-events-none absolute inset-x-0 top-0" />
       <div className="relative mx-auto flex min-h-[650px] w-full max-w-[1680px] flex-col justify-center px-5 pb-32 pt-24 sm:px-8 lg:min-h-[min(850px,86svh)] lg:px-14 lg:pb-36">
         <div className={`flex w-full max-w-[860px] flex-col ${alignment}`}>

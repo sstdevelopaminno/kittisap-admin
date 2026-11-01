@@ -386,8 +386,8 @@ export default function BannerSettingsClient({ locale, initialSettings, bootstra
               <Field label={text.bannerImageUrl} className="md:col-span-2">
                 <p className="mb-2 rounded-xl border border-amber-300/50 bg-amber-50 px-3 py-2 text-xs leading-relaxed text-amber-950">
                   {locale === "th"
-                    ? "หน้าแรกใหม่แสดงภาพรถจริงจากรูปปกสินค้าแนะนำโดยอัตโนมัติ เพื่อไม่ให้มีตัวหนังสือฝังในรูป หากต้องการเปลี่ยนรถบนแบนเนอร์ ให้แก้ภาพปกหรือสินค้าแนะนำในเมนูสินค้า"
-                    : "The new homepage hero uses the featured ATV product cover image, not this legacy artwork. Change the first featured product or its cover photo to update the hero vehicle."}
+                    ? "หน้าแรกแสดงสไลด์อัตโนมัติจากภาพสินค้าแนะนำหลายรุ่นในฐานข้อมูล (ไม่ใช้ภาพแบนเนอร์เก่าที่มีตัวหนังสือ) เปลี่ยนภาพ ลำดับรุ่น และจำนวนภาพได้จากเมนูสินค้า โดยสไลด์รองรับปุ่มเลื่อนและการปัดบนมือถือ"
+                    : "The homepage now cycles through product gallery photos for up to eight featured ATV models. Update featured models and their images under Products; the legacy text-heavy banner is not displayed."}
                   {" "}
                   <Link href="/admin/products" className="font-extrabold underline underline-offset-2">
                     {locale === "th" ? "จัดการสินค้า" : "Manage products"}
