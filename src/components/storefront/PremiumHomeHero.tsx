@@ -69,16 +69,19 @@ export function PremiumHomeHero({
           borderTopWidth: settings.imageFrameEnabled ? Math.min(settings.imageFrameBorderWidthPx, 4) : 0,
         }}
       >
+        <div className="premium-hero-vehicle-aura pointer-events-none absolute inset-0" />
         {imageUrl ? (
-          <Image
-            src={imageUrl}
-            alt={imageAlt}
-            fill
-            priority
-            fetchPriority="high"
-            sizes="100vw"
-            className={`premium-hero-photo object-cover object-center ${motionClass}`}
-          />
+          <div className="premium-hero-vehicle-stage absolute inset-y-0 right-0 overflow-hidden">
+            <Image
+              src={imageUrl}
+              alt={imageAlt}
+              fill
+              priority
+              fetchPriority="high"
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 85vw, 65vw"
+              className={`premium-hero-photo object-contain ${motionClass}`}
+            />
+          </div>
         ) : (
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_75%_30%,rgba(205,151,49,0.48),transparent_45%),linear-gradient(125deg,#302213,#090909_75%)]" />
         )}
