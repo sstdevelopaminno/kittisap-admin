@@ -1870,3 +1870,47 @@ html.storefront-no-scrollbar *::-webkit-scrollbar {
   .premium-button-gold, .premium-image-tile, .premium-benefit-card,
   .premium-hero-photo { animation: none !important; transition: none !important; transform: none !important; }
 }
+
+
+/* Text-free hero media: use featured ATV photography, not the legacy
+   promotional graphic with typography baked into its pixels. */
+.premium-hero-media {
+  background-color: #08090a;
+  background-image: radial-gradient(ellipse at 72% 51%, rgba(160,117,52,.28), transparent 59%);
+}
+.premium-hero-vehicle-aura {
+  background: radial-gradient(ellipse at 76% 53%, rgba(234,192,114,.26) 0%, rgba(125,82,30,.14) 35%, transparent 68%);
+}
+.premium-hero-vehicle-stage {
+  width: min(70%, 1100px);
+  background: radial-gradient(ellipse at 55% 49%, #ceb486 0%, #a8844d 27%, #5f4524 56%, transparent 79%);
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 18%, #000 92%, transparent 100%);
+  mask-image: linear-gradient(90deg, transparent 0%, #000 18%, #000 92%, transparent 100%);
+}
+.premium-hero-vehicle-stage .premium-hero-photo {
+  object-fit: contain;
+  object-position: 52% center;
+  mix-blend-mode: multiply;
+  filter: contrast(1.12) saturate(.92) sepia(.13);
+  opacity: .98;
+}
+.premium-hero-shade {
+  background:
+    linear-gradient(90deg, rgba(6,7,9,.98) 0%, rgba(7,7,8,.95) 24%, rgba(9,9,9,.77) 43%, rgba(7,7,7,.08) 78%),
+    linear-gradient(0deg, rgba(6,7,8,.93), transparent 32%),
+    radial-gradient(ellipse at 80% 15%, rgba(212,150,46,.12), transparent 48%);
+}
+@media (max-width: 1023px) {
+  .premium-hero-vehicle-stage { width: 82%; opacity: .8; }
+  .premium-hero-shade {
+    background: linear-gradient(90deg, rgba(6,7,8,.98), rgba(6,7,8,.79) 48%, rgba(6,7,8,.20)),
+      linear-gradient(0deg, rgba(4,5,6,.90), transparent 62%);
+  }
+}
+@media (max-width: 640px) {
+  .premium-hero-vehicle-stage { inset-block: 5% 0; width: 100%; opacity: .43; }
+  .premium-hero-vehicle-stage .premium-hero-photo { object-position: center 52%; }
+  .premium-hero-shade {
+    background: linear-gradient(0deg, rgba(5,6,7,.98), rgba(6,6,7,.74) 59%, rgba(7,7,7,.62));
+  }
+}
