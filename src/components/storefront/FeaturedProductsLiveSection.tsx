@@ -197,13 +197,13 @@ export function FeaturedProductsLiveSection({
   }
 
   return (
-    <section id="updates" className="mx-auto w-full max-w-7xl px-4 py-12">
+    <section id="updates" className="mx-auto w-full max-w-[1680px] px-4 py-16 sm:px-6 xl:px-10">
       <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h2 className="text-2xl font-black tracking-tight text-slate-100 md:text-3xl">{sectionTitle}</h2>
+          <h2 className="text-3xl font-black tracking-tight text-[#f6eddb] md:text-5xl">{sectionTitle}</h2>
           {sectionSubtitle ? <p className="mt-1 text-sm text-slate-300/70">{sectionSubtitle}</p> : null}
         </div>
-        <span className="rounded-full border border-slate-400/20 bg-white/5 px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.12em] text-slate-200/85">
+        <span className="rounded-full border border-[#d6b264]/40 bg-[#bd8d3e]/10 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.14em] text-[#efd18c]">
           {liveTagLabel}
         </span>
       </div>
