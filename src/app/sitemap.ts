@@ -2,27 +2,24 @@ import type { MetadataRoute } from "next";
 
 import { listPublicProducts } from "../../lib/db/publicProducts";
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+const siteUrl = "https://kittisap-admin.vercel.app";
 
 const staticPaths = [
   "/",
   "/products",
   "/pricing",
+  "/promotions",
   "/contact",
-  "/auth/login",
-  "/auth/register",
-  "/cart",
-  "/account",
-  "/orders",
   "/en",
   "/en/products",
   "/en/pricing",
+  "/en/promotions",
   "/en/contact",
-  "/en/auth/login",
-  "/en/auth/register",
-  "/en/cart",
-  "/en/account",
-  "/en/orders",
+  "/lo",
+  "/lo/products",
+  "/lo/pricing",
+  "/lo/promotions",
+  "/lo/contact",
 ];
 
 async function listAllProductSlugs() {
@@ -44,9 +41,9 @@ async function listAllProductSlugs() {
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
-  const productSlugs = await listAllProductSlugs();
+  const productSlugs = await listAllProductSlugs().catch(() => [] as string[]);
 
-  const productPaths = productSlugs.flatMap((slug) => [`/products/${slug}`, `/en/products/${slug}`]);
+  const productPaths = productSlugs.flatMap((slug) => [`/products/${slug}`, `/en/products/${slug}`, `/lo/products/${slug}`]);
   const allPaths = [...staticPaths, ...productPaths];
 
   return allPaths.map((path) => ({

@@ -1,8 +1,14 @@
+import type { Metadata } from "next";
 import { getAppLocale } from "../../lib/i18n/locale";
+import { getHomeMetadata } from "../../lib/seo/home-metadata";
 import { MarketingLandingPage } from "../components/storefront/MarketingLandingPage";
 import { redirect } from "next/navigation";
 
 export const dynamic = "force-dynamic";
+
+export async function generateMetadata(): Promise<Metadata> {
+  return getHomeMetadata(await getAppLocale());
+}
 
 type HomeProps = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;

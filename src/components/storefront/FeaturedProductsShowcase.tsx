@@ -65,34 +65,44 @@ export function FeaturedProductsShowcase({
 
   return (
     <>
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
         {items.map((item) => (
           <button
             key={item.id}
             type="button"
             onClick={() => setActiveId(item.id)}
-            className="group tap-ripple app-press overflow-hidden rounded-2xl border border-slate-400/20 bg-gradient-to-b from-slate-900/90 to-slate-950/80 text-left shadow-[0_14px_50px_rgba(0,0,0,0.28)] transition hover:-translate-y-0.5 hover:border-amber-400/40"
+            className="group tap-ripple app-press relative overflow-hidden rounded-[24px] border border-[#d4ae64]/20 bg-[#141414] text-left shadow-[0_18px_60px_rgba(0,0,0,0.3)] transition duration-300 hover:-translate-y-1 hover:border-[#d4ae64]/70 hover:shadow-[0_22px_65px_rgba(170,116,36,0.14)]"
           >
             {item.coverUrl ? (
-              <div className="relative aspect-[16/10] w-full overflow-hidden">
+              <div className="relative aspect-[4/3] w-full overflow-hidden bg-[#f7f6f2]">
                 <Image
                   src={item.coverUrl}
                   alt={item.title}
                   fill
                   sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 25vw"
-                  className="object-cover transition duration-500 group-hover:scale-[1.03]"
+                  className="object-contain p-3 transition-transform duration-700 group-hover:scale-[1.08]"
                   loading="lazy"
                 />
               </div>
             ) : (
-              <div className="grid aspect-[16/10] place-items-center bg-[linear-gradient(135deg,rgba(245,158,11,0.22),rgba(59,130,246,0.12))] text-sm text-slate-200">
+              <div className="grid aspect-[4/3] place-items-center bg-[linear-gradient(135deg,rgba(245,158,11,0.22),rgba(20,20,20,1))] text-sm text-amber-100">
                 {t.noImage}
               </div>
             )}
-            <div className="p-4">
-              <p className="line-clamp-2 min-h-[2.5rem] text-sm font-extrabold tracking-tight text-slate-100">{item.title}</p>
-              <p className="mt-1 text-xs text-slate-300/70">
-                THB {item.price.toLocaleString()} | {t.stock} {item.stock}
+            <div className="space-y-3 p-5">
+              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-[#d7b16a]">KITTISAP ATV</p>
+              <h3 className="line-clamp-2 min-h-[3.2rem] text-base font-extrabold leading-relaxed tracking-tight text-[#f8f1e5]">{item.title}</h3>
+              <div className="flex items-center justify-between gap-2 border-t border-[#d4ae64]/20 pt-3">
+                <div>
+                  <span className="block text-[10px] uppercase tracking-wide text-slate-400">{locale === "th" ? "ราคาเริ่มต้น" : locale === "lo" ? "ລາຄາ" : "Price"}</span>
+                  <span className="text-lg font-black text-[#f3ce80]">฿{item.price.toLocaleString()}</span>
+                </div>
+                <span className={`rounded-full px-2.5 py-1 text-[10px] font-bold ${item.stock > 0 ? "bg-emerald-500/10 text-emerald-300" : "bg-rose-500/10 text-rose-300"}`}>
+                  {item.stock > 0 ? `${t.stock} ${item.stock}` : t.outOfStock}
+                </span>
+              </div>
+              <p className="inline-flex items-center gap-2 text-xs font-bold text-amber-100/90 transition group-hover:text-[#f2ca78]">
+                {t.detail} <span aria-hidden="true">↗</span>
               </p>
             </div>
           </button>

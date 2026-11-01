@@ -1744,3 +1744,129 @@ html.storefront-no-scrollbar *::-webkit-scrollbar {
   75% { transform: rotate(-1.2deg); }
   100% { transform: rotate(0deg); }
 }
+
+
+/* Kittisap ATV premium storefront — applies to public navigation and homepage only. */
+.kittisap-premium-home {
+  overflow: clip;
+  background-image: radial-gradient(ellipse at 85% 21%, rgba(189, 137, 52, .12), transparent 37%),
+    linear-gradient(180deg, rgba(9, 10, 10, .96), #0a0c0e 55%, #08090b);
+}
+.kittisap-premium-home section[id] { scroll-margin-top: 90px; }
+.kittisap-top-nav { isolation: isolate; }
+.kittisap-top-nav a:focus-visible,
+.kittisap-top-nav button:focus-visible,
+.kittisap-premium-home a:focus-visible,
+.kittisap-premium-home button:focus-visible {
+  outline: 2px solid #f4cd7e;
+  outline-offset: 3px;
+}
+.kittisap-top-nav .premium-nav-title { letter-spacing: .08em; }
+.kittisap-top-nav [aria-label="Mobile top navigation"] > a {
+  color: #f2e7cd;
+  border: 1px solid transparent;
+  border-radius: 12px;
+}
+.kittisap-top-nav [aria-label="Mobile top navigation"] > a:hover,
+.kittisap-top-nav [aria-label="Mobile top navigation"] > a:focus-visible {
+  border-color: rgba(223, 178, 94, .3);
+  background: rgba(204, 149, 55, .12);
+  color: #ffdd96;
+}
+.kittisap-top-nav #marketing-top-nav-mobile { color: #f2e7cd; }
+.kittisap-top-nav #marketing-top-nav-mobile [class*="bg-slate-50"] { background: #1b1a16; }
+.kittisap-top-nav #marketing-top-nav-mobile [class*="text-slate-700"] { color: #f1e8d6; }
+
+.premium-hero {
+  min-height: 650px;
+  background: #0b0b0a;
+}
+.premium-hero-media { position: absolute; inset: 0; overflow: hidden; }
+.premium-hero-photo {
+  transform-origin: center center;
+  filter: saturate(.96) contrast(1.07);
+  transition: transform 900ms ease;
+}
+.premium-hero-shade {
+  background: linear-gradient(90deg, rgba(5, 7, 9, .98) 0%, rgba(8, 8, 8, .90) 22%, rgba(9, 8, 8, .68) 48%, rgba(8, 8, 8, .12) 100%),
+    linear-gradient(0deg, rgba(7, 8, 10, .9), transparent 30%),
+    radial-gradient(ellipse at 65% 10%, rgba(229, 163, 57, .16), transparent 60%);
+}
+.premium-hero-line { height: 2px; background: linear-gradient(90deg, transparent, #cb9847, #fae2a7, #cb9847, transparent); opacity: .75; }
+.premium-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  max-width: max-content;
+  color: #f3cc79;
+  font-weight: 900;
+  letter-spacing: .24em;
+  text-transform: uppercase;
+  line-height: 1.4;
+}
+.premium-gold-dot { width: 8px; height: 8px; flex: none; border-radius: 100%; background: #f5ce7a; box-shadow: 0 0 0 5px rgba(231, 179, 82, .14), 0 0 24px rgba(231, 179, 82, .7); }
+.premium-hero-title { text-wrap: balance; text-shadow: 0 10px 40px rgba(0, 0, 0, .45); }
+.premium-hero-description { color: #e7e0d3; text-wrap: pretty; text-shadow: 0 2px 20px rgba(0,0,0,.6); }
+.premium-button-gold {
+  background: linear-gradient(110deg, #fff0be 0%, #e5b95c 44%, #c99435 100%);
+  color: #21170b; border: 1px solid #f3d58b;
+  box-shadow: 0 10px 40px rgba(194, 139, 50, .3);
+  transition: transform .25s ease, box-shadow .25s ease, filter .25s ease;
+}
+.premium-button-gold:hover { transform: translateY(-2px); box-shadow: 0 14px 44px rgba(214, 166, 78, .4); filter: brightness(1.06); }
+.premium-button-outline {
+  border: 1px solid rgba(245, 215, 154, .55);
+  background: rgba(14, 14, 14, .48); color: #ffedc9;
+  backdrop-filter: blur(12px);
+  transition: background .2s ease, border-color .2s ease;
+}
+.premium-button-outline:hover { background: rgba(210, 158, 67, .15); border-color: #e9bc65; }
+.premium-hero-foot { border-top: 1px solid rgba(232, 198, 136, .25); padding-top: 20px; }
+.premium-scroll-indicator {
+  display: inline-grid; place-items: center;
+  width: 34px; height: 34px;
+  border-radius: 50%; border: 1px solid rgba(234, 193, 119, .48);
+  background: rgba(219, 165, 66, .1); color: #f4d590;
+}
+.premium-intro {
+  background-image: linear-gradient(115deg, rgba(213, 159, 72, .06), transparent 45%, rgba(213, 159, 72, .08));
+}
+.premium-intro::before, .premium-intro::after {
+  content: ""; position: absolute; top: 0; width: 100px; height: 2px;
+  background: #e8c17a; opacity: .9;
+}
+.premium-intro::before { left: 50%; transform: translateX(-50%); }
+.premium-intro::after { display: none; }
+.premium-image-tile { transition: border-color .2s ease, transform .3s ease; }
+.premium-image-tile:hover { border-color: #d4ae69; transform: translateY(-3px); }
+.premium-brand-card { box-shadow: inset 0 1px 0 rgba(255,255,255,.6), 0 12px 40px rgba(0,0,0,.23); }
+.premium-benefit-card { position: relative; transition: transform .3s ease, border-color .3s ease, background .3s ease; }
+.premium-benefit-card::after {
+  content: ""; position: absolute; left: 24px; bottom: 0; width: 66px; height: 2px;
+  background: linear-gradient(90deg, #f0d28a, transparent); opacity: .65;
+}
+.premium-benefit-card:hover { transform: translateY(-5px); border-color: rgba(235, 195, 112, .6); background: #1b1916; }
+.kittisap-premium-home #updates,
+.kittisap-premium-home #news { position: relative; }
+.kittisap-premium-home #updates h2,
+.kittisap-premium-home #news h2 { letter-spacing: -.025em; }
+.premium-footer { background: linear-gradient(180deg, #0e1012, #07080a); }
+.premium-footer a { transition: color .2s ease; }
+@media (max-width: 1023px) {
+  .premium-hero-shade {
+    background: linear-gradient(90deg, rgba(4, 5, 5, .88), rgba(6, 6, 6, .38)),
+      linear-gradient(0deg, rgba(4, 5, 6, .92), transparent 62%);
+  }
+  .premium-hero-photo { object-position: 60% center; }
+}
+@media (max-width: 640px) {
+  .premium-hero { min-height: 620px; }
+  .premium-hero-shade { background: linear-gradient(0deg, rgba(5,6,6,.96), rgba(7,7,7,.72) 65%, rgba(8,8,8,.45)); }
+  .premium-hero-title { text-wrap: pretty; }
+  .premium-hero-foot { gap: 8px; }
+  .premium-eyebrow { letter-spacing: .13em; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .premium-button-gold, .premium-image-tile, .premium-benefit-card,
+  .premium-hero-photo { animation: none !important; transition: none !important; transform: none !important; }
+}

@@ -5,6 +5,7 @@ import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { getPublicCart, PUBLIC_CART_UPDATED_EVENT } from "../../../lib/storefront/cart";
+import { InstallWebAppButton } from "./InstallWebAppButton";
 import {
   clearCustomerSessionActivity,
   isCustomerSessionExpired,
@@ -19,11 +20,13 @@ type MarketingTopNavProps = {
   locale: AppLocale;
   useLocalePrefix: boolean;
   brand: string;
+  logoUrl?: string;
   nav: {
     home: string;
     products: string;
     pricing: string;
     contact: string;
+    promotions?: string;
     auth?: string;
   };
   cta: {
@@ -39,28 +42,14 @@ type PublicStorefrontResponse = {
     brandName?: string;
     callButtonLabel?: string;
     callPhone?: string;
+    storefrontLogoUrl?: string;
   };
 };
 
-const localeFlagMap: Record<AppLocale, { code: string; flagUrl: string; alt: string }> = {
-  th: {
-    code: "TH",
-    flagUrl:
-      "https://zbedxvzrbotwngxaktgj.supabase.co/storage/v1/object/sign/Kittisap%20Admin/products/pngtree-spherical-thailand-flag-png-image_3510746.jpg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8wYTM3NDc3Mi1jM2RhLTQ5Y2ItOGMzNy1kODkyYzRlOWIxZWEiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJLaXR0aXNhcCBBZG1pbi9wcm9kdWN0cy9wbmd0cmVlLXNwaGVyaWNhbC10aGFpbGFuZC1mbGFnLXBuZy1pbWFnZV8zNTEwNzQ2LmpwZyIsImlhdCI6MTc3MjI4MjI1NSwiZXhwIjoxODAzODE4MjU1fQ.9kIqCXkNSkq2nLPM1kIu25a9-fw_xDFFhHen47CkKR8",
-    alt: "Thai flag",
-  },
-  en: {
-    code: "EN",
-    flagUrl:
-      "https://zbedxvzrbotwngxaktgj.supabase.co/storage/v1/object/sign/Kittisap%20Admin/products/depositphotos_490775414-stock-illustration-britain-british-flag-icon-flat.jpg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8wYTM3NDc3Mi1jM2RhLTQ5Y2ItOGMzNy1kODkyYzRlOWIxZWEiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJLaXR0aXNhcCBBZG1pbi9wcm9kdWN0cy9kZXBvc2l0cGhvdG9zXzQ5MDc3NTQxNC1zdG9jay1pbGx1c3RyYXRpb24tYnJpdGFpbi1icml0aXNoLWZsYWctaWNvbi1mbGF0LmpwZyIsImlhdCI6MTc3MjI4MjI3OCwiZXhwIjoxODAzODE4Mjc4fQ.-umc0tslEAC_ySweCJDy-v91aEFERuA-yFM7X6cw0X0",
-    alt: "UK flag",
-  },
-  lo: {
-    code: "LO",
-    flagUrl:
-      "https://zbedxvzrbotwngxaktgj.supabase.co/storage/v1/object/sign/Kittisap%20Admin/products/flag-laos-with-red-blue-stripes-white-circle-vector-icon-design_877269-3713.jpg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8wYTM3NDc3Mi1jM2RhLTQ5Y2ItOGMzNy1kODkyYzRlOWIxZWEiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJLaXR0aXNhcCBBZG1pbi9wcm9kdWN0cy9mbGFnLWxhb3Mtd2l0aC1yZWQtYmx1ZS1zdHJpcGVzLXdoaXRlLWNpcmNsZS12ZWN0b3ItaWNvbi1kZXNpZ25fODc3MjY5LTM3MTMuanBnIiwiaWF0IjoxNzcyMjgyMjk2LCJleHAiOjE4MDM4MTgyOTZ9.kcbablkqo9ZKJF1saZTmMDCESDjXdN0Y4DLb8A1LnDs",
-    alt: "Lao flag",
-  },
+const localeFlagMap: Record<AppLocale, { code: string; flag: string; alt: string }> = {
+  th: { code: "TH", flag: "🇹🇭", alt: "ภาษาไทย" },
+  en: { code: "EN", flag: "🇬🇧", alt: "English" },
+  lo: { code: "LO", flag: "🇱🇦", alt: "ພາສາລາວ" },
 };
 
 function withLocale(locale: AppLocale, path: string, useLocalePrefix: boolean) {
@@ -111,7 +100,7 @@ function localizeStorefrontText(raw: string | null | undefined, locale: AppLocal
   return hasThaiChars(value) ? fallback : value;
 }
 
-export function MarketingTopNav({ locale, useLocalePrefix, brand, nav, cta }: MarketingTopNavProps) {
+export function MarketingTopNav({ locale, useLocalePrefix, brand, logoUrl, nav, cta }: MarketingTopNavProps) {
   const router = useRouter();
   const pathname = normalizePath(usePathname() || withLocale(locale, "/", useLocalePrefix));
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -123,6 +112,7 @@ export function MarketingTopNav({ locale, useLocalePrefix, brand, nav, cta }: Ma
   const [logoutConfirmOpen, setLogoutConfirmOpen] = useState(false);
   const [cartQty, setCartQty] = useState(0);
   const [brandOverride, setBrandOverride] = useState<string | null>(null);
+  const [logoOverride, setLogoOverride] = useState<string | null>(null);
   const [callLabelOverride, setCallLabelOverride] = useState<string | null>(null);
   const [callPhoneOverride, setCallPhoneOverride] = useState<string | null>(null);
   const localeMenuRef = useRef<HTMLDivElement | null>(null);
@@ -133,6 +123,7 @@ export function MarketingTopNav({ locale, useLocalePrefix, brand, nav, cta }: Ma
   const productsPath = withLocale(locale, "/products", useLocalePrefix);
   const pricingPath = withLocale(locale, "/pricing", useLocalePrefix);
   const contactPath = withLocale(locale, "/contact", useLocalePrefix);
+  const promotionsPath = withLocale(locale, "/promotions", useLocalePrefix);
   const authPath = withLocale(locale, "/auth/login", useLocalePrefix);
   const accountPath = withLocale(locale, "/account", useLocalePrefix);
   const cartPath = withLocale(locale, "/cart", useLocalePrefix);
@@ -265,9 +256,11 @@ export function MarketingTopNav({ locale, useLocalePrefix, brand, nav, cta }: Ma
         }
 
         const nextBrand = String(payload.data.brandName ?? "").trim();
+        const nextLogo = String(payload.data.storefrontLogoUrl ?? "").trim();
         const nextCallLabel = String(payload.data.callButtonLabel ?? "").trim();
         const nextCallPhone = String(payload.data.callPhone ?? "").trim();
         setBrandOverride(nextBrand || null);
+        setLogoOverride(nextLogo || null);
         setCallLabelOverride(nextCallLabel || null);
         setCallPhoneOverride(nextCallPhone || null);
       } catch {
@@ -383,6 +376,7 @@ export function MarketingTopNav({ locale, useLocalePrefix, brand, nav, cta }: Ma
     { href: homePath, label: nav.home },
     { href: productsPath, label: nav.products },
     { href: pricingPath, label: nav.pricing },
+    { href: promotionsPath, label: nav.promotions ?? (locale === "th" ? "โปรโมชัน" : locale === "lo" ? "ໂປຣໂມຊັນ" : "Promotions") },
     { href: contactPath, label: nav.contact },
   ];
   if (!isCustomerLoggedIn) {
@@ -391,16 +385,16 @@ export function MarketingTopNav({ locale, useLocalePrefix, brand, nav, cta }: Ma
 
   return (
     <>
-      <header className="sticky top-0 z-[90] border-b border-slate-200 bg-white shadow-sm">
-      <div className="mx-auto flex min-h-[64px] w-full max-w-7xl items-center justify-between gap-3 px-4 py-3">
-        <Link href={homePath} className="flex items-center gap-3 text-sm font-extrabold tracking-wide text-slate-900" aria-label="Go to home">
-          <span className="relative h-9 w-9 overflow-hidden rounded-xl shadow-[0_12px_28px_rgba(15,23,42,0.22)]">
-            <Image src="/icons/pwa-icon-192.png" alt="" fill sizes="36px" className="object-cover" priority />
+      <header className="kittisap-top-nav sticky top-0 z-[90] border-b border-[#d6aa59]/25 bg-[#070909]/95 text-amber-50 shadow-[0_15px_45px_rgba(0,0,0,0.32)] backdrop-blur-xl">
+      <div className="mx-auto flex min-h-[72px] w-full max-w-[1680px] items-center justify-between gap-4 px-4 py-3 sm:px-6 xl:px-10">
+        <Link href={homePath} className="flex shrink-0 items-center gap-3 text-sm font-extrabold tracking-[0.08em] text-[#f7e9c6] transition hover:text-[#e6b95b]" aria-label="Go to home">
+          <span className="relative h-10 w-10 overflow-hidden rounded-full border border-[#e2ba69]/45 bg-black shadow-[0_0_24px_rgba(222,172,73,0.16)]">
+            <Image src={logoOverride || logoUrl || "/icons/pwa-icon-192.png"} alt="" fill sizes="40px" className="object-contain" unoptimized priority />
           </span>
           <span>{brandOverride ?? brand}</span>
         </Link>
 
-        <nav className="hidden items-center gap-1 md:flex" aria-label="Desktop top navigation">
+        <nav className="hidden items-center gap-1 xl:flex" aria-label="Desktop top navigation">
           {topMenu.map((item) => {
             const normalizedHref = normalizePath(item.href);
             const active =
@@ -411,8 +405,8 @@ export function MarketingTopNav({ locale, useLocalePrefix, brand, nav, cta }: Ma
               <Link
                 key={item.href}
                 href={item.href}
-                className={`app-press rounded-lg px-3 py-1.5 text-xs font-semibold transition ${
-                  active ? "bg-amber-50 text-amber-700" : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                className={`app-press rounded-full px-3 py-2 text-xs font-bold tracking-wide transition ${
+                  active ? "bg-[#d5a64f]/15 text-[#ffdb8b] ring-1 ring-[#d5a64f]/35" : "text-slate-200 hover:bg-white/10 hover:text-[#f5d28c]"
                 }`}
               >
                 {item.label}
@@ -422,22 +416,30 @@ export function MarketingTopNav({ locale, useLocalePrefix, brand, nav, cta }: Ma
         </nav>
 
         <div className="flex items-center gap-2">
-          <div ref={localeMenuRef} className="relative hidden md:block">
+          <InstallWebAppButton locale={locale} />
+          <Link href={cartPath} className="relative inline-flex h-10 w-10 items-center justify-center rounded-full border border-[#d5ab60]/35 bg-[#171714] text-[#f1d69f] transition hover:border-[#e8bf76] hover:bg-[#2c2416]" aria-label={cartLabel} title={cartLabel}>
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <circle cx="9" cy="20" r="1" /><circle cx="19" cy="20" r="1" />
+              <path d="M2 3h2l2.4 11.1a2 2 0 0 0 2 1.6h10.6a2 2 0 0 0 2-1.6L22 7H5" />
+            </svg>
+            {cartQty > 0 ? <span className="absolute -right-1 -top-1 inline-flex min-w-4 items-center justify-center rounded-full bg-[#e7bd69] px-1 text-[10px] font-black text-[#21170b]">{cartQty > 99 ? "99+" : cartQty}</span> : null}
+          </Link>
+          <div ref={localeMenuRef} className="relative hidden xl:block">
             <button
               type="button"
               aria-label="Select language"
               aria-haspopup="menu"
               aria-expanded={localeMenuOpen}
               onClick={() => setLocaleMenuOpen((prev) => !prev)}
-              className="app-press inline-flex h-9 w-[94px] items-center rounded-full border border-amber-400 bg-slate-50 pl-2.5 pr-7 text-xs font-bold uppercase tracking-wide text-slate-700 outline-none transition hover:bg-slate-100 focus:border-amber-500 focus:ring-2 focus:ring-amber-200"
+              className="app-press inline-flex h-10 w-[88px] items-center rounded-full border border-[#dfb65f]/45 bg-[#161612] pl-2.5 pr-6 text-xs font-bold uppercase tracking-wide text-[#f5dfae] outline-none transition hover:border-[#f0cf88] hover:bg-[#252014] focus-visible:ring-2 focus-visible:ring-[#f6d794]"
             >
               <span className="mr-2 inline-flex items-center">
-                <Image src={localeMeta.flagUrl} alt={localeMeta.alt} width={16} height={16} unoptimized className="h-4 w-4 rounded-full object-cover" />
+                <span role="img" aria-label={localeMeta.alt}>{localeMeta.flag}</span>
               </span>
               <span>{localeMeta.code}</span>
             </button>
             {localeMenuOpen && (
-              <div className="absolute right-0 top-[calc(100%+6px)] z-50 w-[94px] overflow-hidden rounded-md border border-slate-300 bg-white shadow-lg">
+              <div className="absolute right-0 top-[calc(100%+8px)] z-50 w-28 overflow-hidden rounded-xl border border-[#d1a454]/40 bg-[#121210] shadow-2xl">
                 {(["th", "en", "lo"] as AppLocale[]).map((localeKey) => {
                   const optionMeta = localeFlagMap[localeKey];
                   const active = localeKey === locale;
@@ -449,17 +451,17 @@ export function MarketingTopNav({ locale, useLocalePrefix, brand, nav, cta }: Ma
                       aria-checked={active}
                       onClick={() => onLocaleChange(localeKey)}
                       className={`flex w-full items-center gap-2 px-2 py-2 text-left text-sm ${
-                        active ? "bg-blue-600 text-white" : "bg-white text-slate-700 hover:bg-slate-100"
+                        active ? "bg-amber-500/20 text-amber-100" : "bg-[#121210] text-slate-200 hover:bg-white/10"
                       }`}
                     >
-                      <Image src={optionMeta.flagUrl} alt={optionMeta.alt} width={16} height={16} unoptimized className="h-4 w-4 rounded-full object-cover" />
+                      <span role="img" aria-label={optionMeta.alt}>{optionMeta.flag}</span>
                       <span className="text-xs font-semibold uppercase tracking-wide">{optionMeta.code}</span>
                     </button>
                   );
                 })}
               </div>
             )}
-            <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-slate-500">
+            <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-[#dfb65f]">
               ▾
             </span>
           </div>
@@ -468,7 +470,7 @@ export function MarketingTopNav({ locale, useLocalePrefix, brand, nav, cta }: Ma
               <button
                 type="button"
                 onClick={() => setProfileMenuOpen((prev) => !prev)}
-                className="app-press inline-flex h-9 w-9 items-center justify-center rounded-full border border-amber-400 bg-amber-50 text-xs font-extrabold text-amber-700 transition hover:border-amber-500 hover:bg-amber-100"
+                className="app-press inline-flex h-10 w-10 items-center justify-center rounded-full border border-[#dcb563]/60 bg-[#30230f] text-xs font-extrabold text-[#ffe0a0] transition hover:bg-[#443219]"
                 aria-label={accountLabel}
                 title={accountLabel}
                 aria-haspopup="menu"
@@ -518,7 +520,7 @@ export function MarketingTopNav({ locale, useLocalePrefix, brand, nav, cta }: Ma
           ) : (
             <a
               href={callHref}
-              className="app-press inline-flex rounded-full border border-amber-300 bg-amber-50 px-3 py-2 text-xs font-extrabold text-amber-700 transition hover:border-amber-400 hover:bg-amber-100"
+              className="app-press inline-flex rounded-full border border-[#e0b45b] bg-gradient-to-r from-[#f5d590] via-[#d7a548] to-[#bc8330] px-4 py-2.5 text-xs font-extrabold text-[#17130d] shadow-[0_8px_24px_rgba(213,165,72,0.16)] transition hover:brightness-110"
               aria-label={callLabel}
             >
               {callLabel}
@@ -531,7 +533,7 @@ export function MarketingTopNav({ locale, useLocalePrefix, brand, nav, cta }: Ma
             aria-label={mobileOpen ? "Close menu" : "Open menu"}
             aria-expanded={mobileOpen}
             aria-controls="marketing-top-nav-mobile"
-            className="app-press inline-flex h-9 w-9 items-center justify-center rounded-lg border border-slate-300 bg-white text-slate-700 md:hidden"
+            className="app-press inline-flex h-10 w-10 items-center justify-center rounded-xl border border-[#d5ab60]/45 bg-[#1a1814] text-[#f5d28c] xl:hidden"
           >
             <span className="text-lg leading-none">{mobileOpen ? "×" : "☰"}</span>
           </button>
@@ -540,12 +542,12 @@ export function MarketingTopNav({ locale, useLocalePrefix, brand, nav, cta }: Ma
 
       <div
         id="marketing-top-nav-mobile"
-        className={`fixed inset-x-0 top-[65px] z-[95] border-t border-slate-200 bg-white shadow-xl transition-[opacity,transform] duration-200 md:hidden ${
+        className={`fixed inset-x-0 top-[72px] z-[95] border-t border-[#d5ab60]/25 bg-[#0d0d0c] shadow-xl transition-[opacity,transform] duration-200 xl:hidden ${
           mobileOpen ? "pointer-events-auto translate-y-0 opacity-100" : "pointer-events-none -translate-y-1 opacity-0"
         }`}
       >
         <nav
-          className="mx-auto flex max-h-[calc(100dvh-65px)] w-full max-w-7xl flex-col gap-1 overflow-y-auto px-3 pb-[max(1rem,env(safe-area-inset-bottom))] pt-3"
+          className="mx-auto flex max-h-[calc(100dvh-72px)] w-full max-w-[1680px] flex-col gap-1 overflow-y-auto px-3 pb-[max(1rem,env(safe-area-inset-bottom))] pt-3"
           aria-label="Mobile top navigation"
         >
           {topMenu.map((item) => {
@@ -609,8 +611,8 @@ export function MarketingTopNav({ locale, useLocalePrefix, brand, nav, cta }: Ma
               </div>
             </div>
           ) : null}
-          <div className="mt-3 rounded-xl border border-slate-200 bg-slate-50 p-2">
-            <p className="px-1 pb-2 text-[11px] font-bold uppercase tracking-[0.12em] text-slate-500">{languageLabel}</p>
+          <div className="mt-3 rounded-xl border border-[#b48b42]/30 bg-[#1b1914] p-2">
+            <p className="px-1 pb-2 text-[11px] font-bold uppercase tracking-[0.12em] text-amber-200/70">{languageLabel}</p>
             <div id="mobile-locale-select" className="grid grid-cols-3 gap-2">
               {(["th", "en", "lo"] as AppLocale[]).map((localeKey) => {
                 const optionMeta = localeFlagMap[localeKey];
@@ -625,11 +627,11 @@ export function MarketingTopNav({ locale, useLocalePrefix, brand, nav, cta }: Ma
                     }}
                     className={`flex w-full items-center justify-center gap-2 rounded-lg border px-2 py-2 text-sm font-semibold transition ${
                       active
-                        ? "border-blue-600 bg-blue-600 text-white shadow-[0_8px_20px_rgba(37,99,235,0.35)]"
-                        : "border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-100"
+                        ? "border-[#e7bc67] bg-[#6a491d] text-amber-100 shadow-lg"
+                        : "border-[#6b5830] bg-[#161614] text-amber-50 hover:border-[#e4b860] hover:bg-[#2c2416]"
                     }`}
                   >
-                    <Image src={optionMeta.flagUrl} alt={optionMeta.alt} width={16} height={16} unoptimized className="h-4 w-4 rounded-full object-cover" />
+                    <span role="img" aria-label={optionMeta.alt}>{optionMeta.flag}</span>
                     <span className="uppercase tracking-wide">{optionMeta.code}</span>
                   </button>
                 );

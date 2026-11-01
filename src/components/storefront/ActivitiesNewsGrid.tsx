@@ -40,7 +40,7 @@ export function ActivitiesNewsGrid({ items, placeholderTitle, placeholderMeta }:
 
   if (validItems.length === 0) {
     return (
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+      <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
         {[1, 2, 3].map((item) => (
           <a key={item} href="#" className="tap-ripple app-press overflow-hidden rounded-2xl border border-slate-400/20 bg-gradient-to-b from-slate-900/90 to-slate-950/80 shadow-[0_14px_50px_rgba(0,0,0,0.28)] transition hover:-translate-y-0.5 hover:border-amber-400/40">
             <div className="aspect-[16/10] bg-[linear-gradient(135deg,rgba(245,158,11,0.22),rgba(59,130,246,0.12)),radial-gradient(800px_300px_at_20%_20%,rgba(255,255,255,0.08),transparent_45%)]" />
@@ -56,7 +56,7 @@ export function ActivitiesNewsGrid({ items, placeholderTitle, placeholderMeta }:
 
   return (
     <>
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+      <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
         {validItems.map((item) => {
           const youtubeId = item.videoUrl ? extractYouTubeId(item.videoUrl) : "";
           const thumbnail =
@@ -69,11 +69,11 @@ export function ActivitiesNewsGrid({ items, placeholderTitle, placeholderMeta }:
               key={item.id}
               type="button"
               onClick={() => setActiveId(item.id)}
-              className="overflow-hidden rounded-2xl border border-slate-400/20 bg-slate-950/85 text-left shadow-[0_14px_50px_rgba(0,0,0,0.28)] transition hover:-translate-y-0.5 hover:border-amber-400/40"
+              className="group overflow-hidden rounded-[24px] border border-[#d6aa59]/25 bg-[#131313] text-left shadow-[0_18px_55px_rgba(0,0,0,0.32)] transition duration-300 hover:-translate-y-1 hover:border-[#e4ba68]/65"
             >
-              <div className="relative aspect-[16/10] w-full bg-[linear-gradient(135deg,rgba(245,158,11,0.22),rgba(59,130,246,0.12))]">
+              <div className="relative aspect-[16/10] w-full bg-[linear-gradient(135deg,rgba(245,158,11,0.22),rgba(12,12,12,1))]">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                {thumbnail ? <img src={thumbnail} alt="" className="h-full w-full object-cover" /> : null}
+                {thumbnail ? <img src={thumbnail} alt="" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" /> : null}
                 {item.mediaType === "youtube" ? (
                   <span className="absolute right-3 top-3 rounded-full border border-white/35 bg-black/55 px-2 py-1 text-[10px] font-bold uppercase tracking-[0.08em] text-white">
                     Video
@@ -81,7 +81,7 @@ export function ActivitiesNewsGrid({ items, placeholderTitle, placeholderMeta }:
                 ) : null}
               </div>
               <div className="p-4">
-                <p className="text-base font-extrabold tracking-tight text-slate-100">{item.title}</p>
+                <p className="text-lg font-extrabold tracking-tight text-[#f5e8d4]">{item.title}</p>
                 <p className="mt-1 text-xs text-slate-300/70">{item.meta}</p>
               </div>
             </button>
@@ -92,7 +92,7 @@ export function ActivitiesNewsGrid({ items, placeholderTitle, placeholderMeta }:
       {active ? (
         <div className="fixed inset-0 z-[120] bg-slate-950/80 p-4 backdrop-blur-sm" onClick={() => setActiveId(null)}>
           <div
-            className="mx-auto mt-8 w-full max-w-4xl overflow-hidden rounded-2xl border border-slate-300/25 bg-[#050b14] shadow-2xl"
+            className="mx-auto mt-8 w-full max-w-4xl overflow-hidden rounded-2xl border border-[#d9ab58]/35 bg-[#11100d] shadow-2xl"
             onClick={(event) => event.stopPropagation()}
           >
             <div className="relative aspect-[16/9] bg-black">
