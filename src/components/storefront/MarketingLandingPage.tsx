@@ -336,10 +336,10 @@ type ShowroomItem = {
 
 async function loadShowroomItems(locale: AppLocale): Promise<ShowroomItem[]> {
   try {
-    const featuredSource = await listPublicProducts({ featuredOnly: true, page: 1, pageSize: 4 });
+    const featuredSource = await listPublicProducts({ featuredOnly: true, page: 1, pageSize: 8 });
     const source = featuredSource.items.length > 0
       ? featuredSource
-      : await listPublicProducts({ page: 1, pageSize: 4 });
+      : await listPublicProducts({ page: 1, pageSize: 8 });
     return source.items.map((item) => ({
       id: item.id,
       slug: item.slug,
@@ -673,7 +673,7 @@ export async function MarketingLandingPage({
       ) : null}
 
       <FeaturedProductsLiveSection
-        initialItems={showroomItems}
+        initialItems={showroomItems.slice(0, 4)}
         locale={locale}
         useLocalePrefix={useLocalePrefix}
         sectionTitle={t.sections.updates}
