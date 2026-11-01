@@ -37,23 +37,16 @@ export function ProductGallerySlider({ title, images, fallbackUrl }: ProductGall
     img.src = normalized;
   }, []);
 
-  useEffect(() => {
-    if (slides.length === 0) {
-      setIndex(0);
-      return;
-    }
-    if (index > slides.length - 1) {
-      setIndex(slides.length - 1);
-    }
-  }, [index, slides.length]);
+  // Clamp the displayed index as images change, without an effect-driven render.
+  const safeIndex = Math.min(index, Math.max(slides.length - 1, 0));
 
   useEffect(() => {
     if (slides.length <= 1) {
       return;
     }
-    prefetchImage(slides[(index + 1) % slides.length]?.url);
-    prefetchImage(slides[(index - 1 + slides.length) % slides.length]?.url);
-  }, [index, prefetchImage, slides]);
+    prefetchImage(slides[(safeIndex + 1) % slides.length]?.url);
+    prefetchImage(slides[(safeIndex - 1 + slides.length) % slides.length]?.url);
+  }, [safeIndex, prefetchImage, slides]);
 
   useEffect(() => {
     return () => {
@@ -97,15 +90,15 @@ export function ProductGallerySlider({ title, images, fallbackUrl }: ProductGall
       }
 
       const next = Math.round(track.scrollLeft / width);
-      if (next !== index) {
+      if (next !== safeIndex) {
         setIndex(Math.max(0, Math.min(next, slides.length - 1)));
       }
     });
-  }, [index, slides.length]);
+  }, [safeIndex, slides.length]);
 
   const moveSlide = useCallback((step: number) => {
-    scrollTo(index + step);
-  }, [index, scrollTo]);
+    scrollTo(safeIndex + step);
+  }, [safeIndex, scrollTo]);
 
   if (slides.length === 0) {
     return (
@@ -131,7 +124,7 @@ export function ProductGallerySlider({ title, images, fallbackUrl }: ProductGall
                 fill
                 sizes="(max-width: 768px) 100vw, 42vw"
                 className="object-cover"
-                priority={index === 0}
+                priority={safeIndex === 0}
                 unoptimized
               />
             </div>
@@ -167,7 +160,7 @@ export function ProductGallerySlider({ title, images, fallbackUrl }: ProductGall
               key={slide.key}
               type="button"
               onClick={() => scrollTo(dotIndex)}
-              className={`h-2 rounded-full transition-all ${dotIndex === index ? "w-6 bg-amber-500" : "w-2 bg-slate-300"}`}
+              className={`h-2 rounded-full transition-all ${dotIndex === safeIndex ? "w-6 bg-amber-500" : "w-2 bg-slate-300"}`}
               aria-label={`Go to slide ${dotIndex + 1}`}
             />
           ))}
