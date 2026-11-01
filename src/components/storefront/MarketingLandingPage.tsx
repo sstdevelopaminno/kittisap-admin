@@ -597,6 +597,7 @@ export async function MarketingLandingPage({
         settings={bannerSettings}
         locale={locale}
         slides={heroSlides}
+        videoUrl={bannerSettings.imageUrl && /\\.(mp4|webm)(?:[?#]|$)/i.test(bannerSettings.imageUrl) ? bannerSettings.imageUrl : null}
         eyebrow={localizedHeroEyebrow}
         title={localizedHeroTitle}
         description={localizedHeroDesc}
