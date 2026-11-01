@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 import type { AppLocale } from "../i18n/locale";
-import { getWebBannerSettings } from "../db/web-settings";
+import { listPublicProducts } from "../db/publicProducts";
 
 const SITE = "https://kittisap-admin.vercel.app";
 
@@ -28,8 +28,11 @@ export async function getHomeMetadata(locale: AppLocale): Promise<Metadata> {
   const canonical = locale === "th" ? SITE : `${SITE}/${locale}`;
   let heroImage: string | null = null;
   try {
-    const settings = await getWebBannerSettings();
-    heroImage = settings.imageUrl?.trim() || null;
+    const featured = await listPublicProducts({ featuredOnly: true, includeTotal: false, page: 1, pageSize: 4 });
+    const items = featured.items.length
+      ? featured.items
+      : (await listPublicProducts({ includeTotal: false, page: 1, pageSize: 4 })).items;
+    heroImage = items.find((item) => Boolean(item.cover_url))?.cover_url ?? null;
   } catch {
     // Keep metadata usable even during transient database outages.
   }
