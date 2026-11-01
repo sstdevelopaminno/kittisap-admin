@@ -493,17 +493,31 @@ export async function MarketingLandingPage({
   // Build a full-screen slideshow from Supabase product image galleries.
   // The old promotional banner is deliberately excluded because it contains
   // large words baked into the pixels. No images are copied into source code.
-  const heroSlides = showroomItems.flatMap((item) => {
-    const gallery = item.images.length > 0
+  const galleries = showroomItems.map((item) => {
+    const images = item.images.length > 0
       ? item.images
       : item.coverUrl ? [{ id: item.id, url: item.coverUrl }] : [];
-    return gallery.map((image) => ({
+    return images.map((image) => ({
       id: `${item.id}-${image.id}`,
       src: image.url,
       title: item.title,
       productHref: withLocale(locale, `/products/${item.slug}`, useLocalePrefix),
     }));
-  }).filter((slide, index, all) => all.findIndex((x) => x.src === slide.src) === index).slice(0, 10);
+  });
+  // Round-robin: introduce each ATV model before showing extra angles of
+  // the same model, rather than filling the carousel with just one gallery.
+  const heroSlides = [];
+  const seenHeroImages = new Set<string>();
+  const maxGallerySize = Math.max(0, ...galleries.map((gallery) => gallery.length));
+  for (let imageIndex = 0; imageIndex < maxGallerySize && heroSlides.length < 10; imageIndex += 1) {
+    for (const gallery of galleries) {
+      const slide = gallery[imageIndex];
+      if (!slide || seenHeroImages.has(slide.src)) continue;
+      seenHeroImages.add(slide.src);
+      heroSlides.push(slide);
+      if (heroSlides.length === 10) break;
+    }
+  }
   const origin = "https://kittisap-admin.vercel.app";
   const structuredData = {
     "@context": "https://schema.org",
