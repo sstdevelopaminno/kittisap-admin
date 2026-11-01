@@ -208,6 +208,14 @@ export async function POST(request: NextRequest) {
     const body = (await request.json()) as { action?: string; message?: string; branch?: string };
     const action = body.action ?? "scan";
 
+    // Production deployments are immutable; never execute Git writes or builds over HTTP.
+    if (process.env.NODE_ENV === "production" && action !== "scan") {
+      return NextResponse.json(
+        { ok: false, code: "DEVELOPER_WRITE_DISABLED", error: "Developer write actions are disabled in production" },
+        { status: 403, headers: { "Cache-Control": "no-store" } },
+      );
+    }
+
     if (action === "scan") {
       const summary = await getGitSummary();
       return NextResponse.json({ ok: true, summary });
