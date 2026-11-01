@@ -7,7 +7,10 @@ export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {
-    const data = await listPublicProducts({ featuredOnly: true, includeTotal: false, page: 1, pageSize: 8 });
+    const featured = await listPublicProducts({ featuredOnly: true, includeTotal: false, page: 1, pageSize: 8 });
+    const data = featured.items.length > 0
+      ? featured
+      : await listPublicProducts({ includeTotal: false, page: 1, pageSize: 8 });
     return NextResponse.json({ ok: true, data }, { headers: { "Cache-Control": "no-store, max-age=0" } });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Failed to fetch featured products";
