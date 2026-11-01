@@ -314,7 +314,7 @@ create or replace function public.reserve_product_stock(p_product_id uuid, p_qty
 returns boolean
 language plpgsql
 security definer
-set search_path = public, pg_temp
+set search_path = ''
 as $$
 declare
   affected int := 0;
@@ -338,7 +338,7 @@ create or replace function public.release_product_stock(p_product_id uuid, p_qty
 returns boolean
 language plpgsql
 security definer
-set search_path = public, pg_temp
+set search_path = ''
 as $$
 begin
   if p_qty <= 0 then
@@ -515,8 +515,11 @@ grant select, insert, update on public.orders to authenticated;
 grant select, insert on public.order_items to authenticated;
 grant select, insert on public.payment_slips to authenticated;
 grant select on public.payment_settings to authenticated;
-grant execute on function public.reserve_product_stock(uuid, int) to authenticated;
-grant execute on function public.release_product_stock(uuid, int) to authenticated;
+-- Stock RPCs mutate shared inventory. Never allow clients to invoke them directly.
+revoke execute on function public.reserve_product_stock(uuid, int) from public, anon, authenticated;
+revoke execute on function public.release_product_stock(uuid, int) from public, anon, authenticated;
+grant execute on function public.reserve_product_stock(uuid, int) to service_role;
+grant execute on function public.release_product_stock(uuid, int) to service_role;
 
 do $$
 begin
