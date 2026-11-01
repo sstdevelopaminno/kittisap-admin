@@ -2040,3 +2040,47 @@ html.storefront-no-scrollbar *::-webkit-scrollbar {
   .premium-hero-slide, .premium-slide-background, .premium-slide-vehicle,
   .premium-carousel-arrow, .premium-carousel-dot { transition: none !important; animation: none !important; transform: none !important; }
 }
+
+
+/* Homepage cinematic video: bright ATV footage, warm gold sheen, readable copy.
+   Video renders alone. Image carousel and 3D effects are fallback-only. */
+.premium-hero-video-shell {
+  background: #17150f;
+  isolation: isolate;
+}
+.premium-hero-video-frame {
+  object-position: center center;
+  filter: brightness(1.28) contrast(1.035) saturate(1.16);
+  transform: scale(1.01);
+}
+.premium-hero-video-shade {
+  background: linear-gradient(
+    90deg,
+    rgba(7, 8, 8, .92) 0%,
+    rgba(8, 8, 8, .76) 24%,
+    rgba(9, 10, 10, .42) 47%,
+    rgba(7, 8, 8, .08) 76%,
+    transparent 100%
+  ), linear-gradient(0deg, rgba(7, 8, 8, .44), transparent 24%);
+}
+.premium-hero-video-sheen {
+  opacity: .65;
+  background: radial-gradient(ellipse 55% 60% at 82% 20%, rgba(244, 203, 124, .16), transparent 72%);
+  mix-blend-mode: screen;
+}
+@media (max-width: 1023px) {
+  .premium-hero-video-frame { object-position: 58% center; }
+  .premium-hero-video-shade {
+    background: linear-gradient(90deg, rgba(7,8,9,.89), rgba(7,8,9,.5) 56%, rgba(7,8,9,.12)),
+      linear-gradient(0deg, rgba(7,8,9,.50), transparent 37%);
+  }
+}
+@media (max-width: 640px) {
+  .premium-hero-video-frame { object-position: 64% center; filter: brightness(1.22) contrast(1.025) saturate(1.12); }
+  .premium-hero-video-shade {
+    background: linear-gradient(0deg,rgba(6,7,8,.85) 0%,rgba(6,7,8,.65) 54%,rgba(6,7,8,.34) 100%);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .premium-hero-video-frame { transform: none; }
+}
