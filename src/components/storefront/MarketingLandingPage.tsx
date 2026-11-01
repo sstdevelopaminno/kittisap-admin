@@ -33,6 +33,7 @@ import { MiddleBannerStrip } from "./MiddleBannerStrip";
 import { MarketingTopNav } from "./MarketingTopNav";
 import { NewsletterSubscribeSection } from "./NewsletterSubscribeSection";
 import { HomepagePromoPopup } from "./HomepagePromoPopup";
+import { PremiumHomeHero } from "./PremiumHomeHero";
 import { StorefrontRealtimeRefresh } from "./StorefrontRealtimeRefresh";
 
 type MarketingLandingPageProps = {
@@ -291,7 +292,7 @@ function Frame({ children, showOuterFrame }: { children: ReactNode; showOuterFra
   }
 
   return (
-    <main className="min-h-screen bg-[radial-gradient(1200px_600px_at_20%_-10%,rgba(245,158,11,0.12),transparent_60%),radial-gradient(900px_500px_at_100%_10%,rgba(59,130,246,0.10),transparent_60%),#0b0f16] text-slate-200">
+    <main className="min-h-screen bg-[#08090b] text-slate-200">
       {children}
     </main>
   );
@@ -336,10 +337,9 @@ type ShowroomItem = {
 async function loadShowroomItems(locale: AppLocale): Promise<ShowroomItem[]> {
   try {
     const featuredSource = await listPublicProducts({ featuredOnly: true, page: 1, pageSize: 4 });
-    if (featuredSource.items.length === 0) {
-      return [];
-    }
-    const source = featuredSource;
+    const source = featuredSource.items.length > 0
+      ? featuredSource
+      : await listPublicProducts({ page: 1, pageSize: 4 });
     return source.items.map((item) => ({
       id: item.id,
       slug: item.slug,
@@ -372,7 +372,7 @@ export async function MarketingLandingPage({
   showTopNav = true,
 }: MarketingLandingPageProps) {
   const t = copy(locale);
-  const showroomItems = await loadShowroomItems(locale);
+  const showroomItemsPromise = loadShowroomItems(locale);
   let bannerSettings = getDefaultWebBannerSettings();
   let storefrontSettings = getDefaultWebStorefrontSettings();
   let homepageAppearance = getDefaultWebHomepageAppearanceSettings();
@@ -413,6 +413,7 @@ export async function MarketingLandingPage({
   if (middleBannerResult.status === "fulfilled") middleBannerSettings = middleBannerResult.value;
   if (brandGuaranteeResult.status === "fulfilled") brandGuaranteeSettings = brandGuaranteeResult.value;
   if (newsCardsResult.status === "fulfilled") newsCardsSettings = newsCardsResult.value;
+  const showroomItems = await showroomItemsPromise;
   const homePath = withLocale(locale, "/", useLocalePrefix);
   const productsPath = withLocale(locale, "/products", useLocalePrefix);
   const pricingPath = withLocale(locale, "/pricing", useLocalePrefix);
@@ -491,38 +492,10 @@ export async function MarketingLandingPage({
   );
   const heroImageUrl = bannerSettings.imageUrl || showroomItems[0]?.coverUrl || null;
   const heroImageAlt = localizedHeroTitle || showroomItems[0]?.title || "Banner image";
-  const bannerMotionClass = bannerSettings.imageMotion === "none" ? "" : `banner-motion-${bannerSettings.imageMotion}`;
-  const bannerFrameClass = `banner-frame-${bannerSettings.imageFrameStyle}`;
-  const contentAlignClass =
-    bannerSettings.contentAlign === "center"
-      ? "items-center text-center"
-      : bannerSettings.contentAlign === "right"
-        ? "items-end text-right"
-        : "items-start text-left";
-  const buttonAlignClass =
-    bannerSettings.contentAlign === "center"
-      ? "justify-center"
-      : bannerSettings.contentAlign === "right"
-        ? "justify-end"
-        : "justify-start";
-  const titleEffectClass =
-    bannerSettings.textEffect === "gradient"
-      ? "bg-gradient-to-r from-amber-200 via-white to-cyan-200 bg-clip-text text-transparent"
-      : "";
-  const titleEffectStyle =
-    bannerSettings.textEffect === "shadow"
-      ? { textShadow: "0 10px 26px rgba(15,23,42,0.45)" }
-      : bannerSettings.textEffect === "glow"
-        ? { textShadow: "0 0 24px rgba(56,189,248,0.5)" }
-        : undefined;
-  const heroTitleMaxPx =
-    locale === "th"
-      ? Math.round(bannerSettings.titleFontSizePx * (bannerSettings.titleFontScaleThaiPercent / 100))
-      : bannerSettings.titleFontSizePx;
-
   return (
     <Frame showOuterFrame={showOuterFrame}>
       <div
+        className="kittisap-premium-home"
         style={{
           backgroundColor: homepageAppearance.pageBackgroundColor,
           color: homepageAppearance.textColor,
@@ -535,6 +508,7 @@ export async function MarketingLandingPage({
             locale={locale}
             useLocalePrefix={useLocalePrefix}
             brand={storefrontSettings.brandName || t.brand}
+            logoUrl={storefrontSettings.storefrontLogoUrl}
             nav={t.nav}
             cta={{
               ...t.cta,
@@ -544,77 +518,26 @@ export async function MarketingLandingPage({
           />
         ) : null}
 
-      <section id="showroom" className="mx-auto w-full max-w-7xl px-4 py-7">
-        <article
-          className="relative overflow-hidden rounded-[28px] border border-slate-400/20 shadow-[0_18px_60px_rgba(0,0,0,0.45)]"
-          style={{ background: `linear-gradient(135deg, ${bannerSettings.backgroundFrom}, ${bannerSettings.backgroundTo})` }}
-        >
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(closest-side,rgba(245,158,11,0.26),transparent_55%),radial-gradient(closest-side,rgba(59,130,246,0.16),transparent_62%),linear-gradient(120deg,transparent_35%,rgba(255,255,255,0.08)_45%,transparent_55%)] opacity-70" />
-
-          <div className="relative grid gap-5 p-6 md:p-8 lg:grid-cols-[minmax(0,1.25fr)_minmax(320px,0.75fr)] lg:gap-6">
-            <div
-              className={`flex max-w-full flex-col ${contentAlignClass}`}
-              style={{
-                minHeight: bannerSettings.autoHeight
-                  ? undefined
-                  : `clamp(240px, 34vw, ${bannerSettings.minHeightPx}px)`,
-              }}
-            >
-              <p className="inline-flex items-center gap-2 uppercase tracking-[0.2em] text-amber-200" style={{ fontSize: `${bannerSettings.eyebrowFontSizePx}px`, fontWeight: 800 }}>{localizedHeroEyebrow}</p>
-              <h1
-                className={`mt-2 max-w-[20ch] leading-tight tracking-tight md:max-w-[18ch] md:text-5xl ${titleEffectClass}`}
-                style={{
-                  fontSize: `clamp(30px,3.8vw,${heroTitleMaxPx}px)`,
-                  color: bannerSettings.textEffect === "gradient" ? undefined : "#f8fafc",
-                  ...titleEffectStyle,
-                }}
-              >
-                {localizedHeroTitle}
-              </h1>
-              <p className="mt-3 max-w-[58ch] text-slate-200/80" style={{ fontSize: `clamp(14px,1.6vw,${bannerSettings.descriptionFontSizePx}px)` }}>{localizedHeroDesc}</p>
-              {bannerSettings.showButtons ? (
-                <div className={`mt-5 flex w-full flex-wrap gap-2 ${buttonAlignClass}`}>
-                  <Link href={productsPath} className="inline-flex rounded-full border border-amber-400/40 bg-amber-500/15 px-4 py-2 text-xs font-extrabold text-amber-200">{localizedPrimaryButton}</Link>
-                  <Link href={contactPath} className="inline-flex rounded-full border border-slate-400/30 bg-white/5 px-4 py-2 text-xs font-extrabold text-slate-100">{localizedSecondaryButton}</Link>
-                </div>
-              ) : null}
-            </div>
-
-            <aside>
-              <div
-                className={`relative aspect-[16/10] overflow-hidden bg-[linear-gradient(135deg,rgba(245,158,11,0.22),rgba(59,130,246,0.12)),repeating-linear-gradient(135deg,rgba(255,255,255,0.06)_0_10px,transparent_10px_20px)] ${
-                  bannerSettings.imageFrameEnabled ? bannerFrameClass : ""
-                }`}
-                style={{
-                  borderRadius: `${bannerSettings.imageFrameRadiusPx}px`,
-                  borderColor: bannerSettings.imageFrameColor,
-                  borderWidth: bannerSettings.imageFrameEnabled ? `${bannerSettings.imageFrameBorderWidthPx}px` : "0px",
-                  borderStyle: bannerSettings.imageFrameEnabled ? "solid" : "none",
-                }}
-              >
-                {heroImageUrl ? (
-                  <Image
-                    src={heroImageUrl}
-                    alt={heroImageAlt}
-                    fill
-                    sizes="(max-width: 768px) 100vw, 40vw"
-                    priority
-                    fetchPriority="high"
-                    className={`object-cover ${bannerMotionClass}`}
-                  />
-                ) : null}
-              </div>
-            </aside>
-          </div>
-        </article>
-      </section>
+      <PremiumHomeHero
+        settings={bannerSettings}
+        locale={locale}
+        imageUrl={heroImageUrl}
+        imageAlt={heroImageAlt}
+        eyebrow={localizedHeroEyebrow}
+        title={localizedHeroTitle}
+        description={localizedHeroDesc}
+        primaryLabel={localizedPrimaryButton}
+        secondaryLabel={localizedSecondaryButton}
+        productsHref={productsPath}
+        contactHref={contactPath}
+      />
 
       <section
-        className="mx-auto w-full max-w-7xl px-4"
+        className="mx-auto w-full max-w-[1680px] px-4"
         style={{ marginTop: `${homepageAppearance.sectionGapPx}px` }}
       >
         <article
-          className="rounded-3xl px-6 py-10 text-center shadow-sm md:px-12 md:py-12"
+          className="premium-intro relative overflow-hidden rounded-[28px] border border-[#c5a467]/20 px-6 py-10 text-center shadow-2xl md:px-12 md:py-14"
           style={{ backgroundColor: homepageAppearance.introCardBackgroundColor }}
         >
           <h2
@@ -623,7 +546,7 @@ export async function MarketingLandingPage({
               color: homepageAppearance.introTitleColor,
               fontWeight: homepageAppearance.introTitleFontWeight,
               fontSize: `clamp(28px, 3.2vw, ${homepageAppearance.introTitleFontSizePx}px)`,
-              textShadow: homepageAppearance.introTextGlow ? "0 0 18px rgba(56, 189, 248, 0.28)" : "none",
+              textShadow: homepageAppearance.introTextGlow ? "0 0 18px rgba(218, 170, 84, 0.28)" : "none",
             }}
           >
             {localizedIntroTitle}
@@ -634,7 +557,7 @@ export async function MarketingLandingPage({
               color: homepageAppearance.introContentColor,
               fontWeight: homepageAppearance.introContentFontWeight,
               fontSize: `clamp(16px, 1.8vw, ${homepageAppearance.introContentFontSizePx}px)`,
-              textShadow: homepageAppearance.introTextGlow ? "0 0 14px rgba(56, 189, 248, 0.22)" : "none",
+              textShadow: homepageAppearance.introTextGlow ? "0 0 14px rgba(218, 170, 84, 0.22)" : "none",
             }}
           >
             {localizedIntroContent}
@@ -644,7 +567,7 @@ export async function MarketingLandingPage({
 
       {homepageImageStrip.items.length > 0 ? (
         <section
-          className="mx-auto w-full max-w-7xl px-4"
+          className="mx-auto w-full max-w-[1680px] px-4"
           style={{ marginTop: `${homepageImageStrip.sectionGapPx}px` }}
         >
           <div
@@ -657,15 +580,15 @@ export async function MarketingLandingPage({
             {homepageImageStrip.items.slice(0, 4).map((item) => (
               <article
                 key={item.id}
-                className="overflow-hidden rounded-2xl border border-slate-300/30 bg-white shadow-sm"
+                className="premium-image-tile group overflow-hidden rounded-2xl border border-[#d4aa5c]/25 bg-[#141210] shadow-2xl"
               >
-                <div className="relative aspect-[16/7]">
+                <div className="relative aspect-[16/9]">
                   <Image
                     src={item.imageUrl}
                     alt={item.altText || "Homepage image"}
                     fill
                     sizes="(max-width: 768px) 100vw, (max-width: 1280px) 33vw, 25vw"
-                    className="object-cover"
+                    className="object-cover transition-transform duration-700 group-hover:scale-[1.05]"
                     loading="lazy"
                   />
                 </div>
@@ -692,7 +615,7 @@ export async function MarketingLandingPage({
 
       {brandGuaranteeSettings.items.length > 0 ? (
         <section
-          className="mx-auto w-full max-w-7xl px-4"
+          className="mx-auto w-full max-w-[1680px] px-4"
           style={{ marginTop: `${brandGuaranteeSettings.sectionGapPx}px` }}
         >
           <div className="mb-4">
@@ -717,12 +640,12 @@ export async function MarketingLandingPage({
                   brandGuaranteeSettings.effect === "lift"
                     ? "hover:-translate-y-1 hover:shadow-xl"
                     : brandGuaranteeSettings.effect === "glow"
-                      ? "hover:shadow-[0_0_30px_rgba(59,130,246,0.45)]"
+                      ? "hover:shadow-[0_0_30px_rgba(220,172,77,0.45)]"
                       : brandGuaranteeSettings.effect === "pulse"
                         ? "hover:scale-[1.04]"
                         : "";
                 const card = (
-                  <article className={`rounded-2xl border border-slate-200/40 bg-white p-4 transition ${effectClass}`}>
+                  <article className={`premium-brand-card rounded-2xl border border-[#d3ac65]/30 bg-[#f5f0e5] p-4 transition ${effectClass}`}>
                     <div className="relative h-[90px] w-[150px]">
                       <Image src={item.logoUrl} alt={item.altText || ""} fill className="object-contain" loading="lazy" unoptimized />
                     </div>
@@ -745,7 +668,7 @@ export async function MarketingLandingPage({
 
       {whyChooseUsSettings.items.length > 0 ? (
         <section
-          className="mx-auto w-full max-w-7xl px-4"
+          className="mx-auto w-full max-w-[1680px] px-4"
           style={{ marginTop: `${whyChooseUsSettings.sectionGapPx}px` }}
         >
           <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
@@ -771,8 +694,8 @@ export async function MarketingLandingPage({
               );
 
               return (
-              <article key={item.id} className="rounded-2xl border border-slate-300/25 bg-white/5 p-5 shadow-[0_10px_30px_rgba(0,0,0,0.15)] backdrop-blur-[1px]">
-                <div className="mb-4 inline-flex h-11 w-11 items-center justify-center rounded-xl bg-slate-100/95 text-blue-600">
+              <article key={item.id} className="premium-benefit-card rounded-2xl border border-[#d4af63]/20 bg-[#141414]/90 p-6 shadow-[0_16px_36px_rgba(0,0,0,0.26)]">
+                <div className="mb-5 inline-flex h-12 w-12 items-center justify-center rounded-xl border border-amber-500/30 bg-[#3b2b17] text-[#edc36e]">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-5 w-5" aria-hidden>
                     <WhyChooseUsIconSvg icon={item.icon} />
                   </svg>
@@ -786,7 +709,7 @@ export async function MarketingLandingPage({
         </section>
       ) : null}
 
-      <section id="news" className="mx-auto w-full max-w-7xl px-4 py-12" style={{ marginTop: `${newsCardsSettings.sectionGapPx}px` }}>
+      <section id="news" className="mx-auto w-full max-w-[1680px] px-4 py-12" style={{ marginTop: `${newsCardsSettings.sectionGapPx}px` }}>
         <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
           <div>
             <h2 className="text-2xl font-black tracking-tight text-slate-100 md:text-3xl">{t.sections.news}</h2>
@@ -811,10 +734,10 @@ export async function MarketingLandingPage({
 
       <footer
         id="contact"
-        className="border-t border-slate-400/20 py-10 text-slate-300/85"
+        className="premium-footer border-t border-[#d6aa59]/25 py-12 text-slate-300/85"
         style={{ color: homepageAppearance.textColor }}
       >
-        <div className="mx-auto grid w-full max-w-7xl gap-4 px-4 md:grid-cols-[1.2fr_1fr_1fr]">
+        <div className="mx-auto grid w-full max-w-[1680px] gap-10 px-6 md:grid-cols-[1.2fr_0.7fr_0.7fr] xl:px-10">
           <div>
             <p className="text-base font-black text-slate-100">{localizedFooterTitle}</p>
             <p className="mt-2 text-sm text-slate-300/75">{localizedFooterDesc1}</p>
@@ -848,7 +771,7 @@ export async function MarketingLandingPage({
         </div>
 
         <div
-          className="mx-auto mt-5 w-full max-w-7xl border-t border-slate-400/20 px-4 pt-4 text-xs"
+          className="mx-auto mt-10 w-full max-w-[1680px] border-t border-[#d5aa5c]/25 px-6 pt-6 text-xs xl:px-10"
           style={{
             backgroundColor: homepageAppearance.footerBottomBackgroundColor,
             color: homepageAppearance.textColor,
