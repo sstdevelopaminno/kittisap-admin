@@ -105,24 +105,15 @@ function buildSlipAutoNote(inspection: SlipInspectionResult) {
 }
 
 type DbClient = Awaited<ReturnType<typeof getSupabaseServerClient>>;
+type InventoryClient = ReturnType<typeof getSupabaseServiceRoleClient>;
 
-function isMissingRpcFunctionError(error: unknown, fnName: string) {
-  const message = String((error as { message?: string } | null)?.message ?? error ?? "").toLowerCase();
-  return message.includes("could not find the function") && message.includes(`public.${fnName}`.toLowerCase());
-}
-
-async function reserveStock(supabase: DbClient, productId: string, qty: number) {
+async function reserveStock(supabase: InventoryClient, productId: string, qty: number) {
   const { data, error } = await supabase.rpc("reserve_product_stock", {
     p_product_id: productId,
     p_qty: qty,
   });
 
   if (error) {
-    if (isMissingRpcFunctionError(error, "reserve_product_stock")) {
-      // Fallback when DB function is not deployed / schema cache is stale.
-      // Stock was already validated earlier in request flow.
-      return;
-    }
     throw new PublicOrderError(500, "STOCK_RESERVE_FAILED", error.message);
   }
 
@@ -131,13 +122,13 @@ async function reserveStock(supabase: DbClient, productId: string, qty: number) 
   }
 }
 
-async function releaseStock(supabase: DbClient, productId: string, qty: number) {
-  const { error } = await supabase.rpc("release_product_stock", {
+async function releaseStock(supabase: InventoryClient, productId: string, qty: number) {
+  const { data, error } = await supabase.rpc("release_product_stock", {
     p_product_id: productId,
     p_qty: qty,
   });
-  if (error && !isMissingRpcFunctionError(error, "release_product_stock")) {
-    throw new PublicOrderError(500, "STOCK_RELEASE_FAILED", error.message);
+  if (error || data !== true) {
+    throw new PublicOrderError(500, "STOCK_RELEASE_FAILED", error?.message ?? "Stock release did not succeed");
   }
 }
 
@@ -321,7 +312,7 @@ export async function createPublicOrder(input: unknown, options?: { idempotencyK
 
     try {
       for (const line of lines) {
-        await reserveStock(supabase, line.productId, line.qty);
+        await reserveStock(serviceSupabase, line.productId, line.qty);
         reserved.push({ productId: line.productId, qty: line.qty });
       }
 
@@ -383,7 +374,7 @@ export async function createPublicOrder(input: unknown, options?: { idempotencyK
       };
     } catch (error) {
       for (const line of reserved) {
-        await releaseStock(supabase, line.productId, line.qty);
+        await releaseStock(serviceSupabase, line.productId, line.qty);
       }
 
       if (error instanceof PublicOrderError) {

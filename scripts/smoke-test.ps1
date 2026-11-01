@@ -1,5 +1,5 @@
 param(
-  [string]$BaseUrl = "https://kittisap.vercel.app",
+  [string]$BaseUrl = "https://kittisap-admin.vercel.app",
   [switch]$VerboseOutput
 )
 
@@ -163,11 +163,11 @@ Invoke-SmokeCheck -Failures $failures -PassCount ([ref]$passCount) -BaseUrl $nor
   return @{ ok = $ok; detail = "code=$code" }
 } -Verbose:$VerboseOutput
 
-Invoke-SmokeCheck -Failures $failures -PassCount ([ref]$passCount) -BaseUrl $normalizedBaseUrl -Name "Forgot OTP API rejects non-registered email" -Path "/api/customer/auth/forgot-password/request" -Method "POST" -ExpectedStatus @(404) -Body @{ email = ("smoke-" + [guid]::NewGuid().ToString("N") + "@example.com") } -Validate {
+Invoke-SmokeCheck -Failures $failures -PassCount ([ref]$passCount) -BaseUrl $normalizedBaseUrl -Name "Forgot OTP API hides email existence" -Path "/api/customer/auth/forgot-password/request" -Method "POST" -ExpectedStatus @(200) -Body @{ email = ("smoke-" + [guid]::NewGuid().ToString("N") + "@example.com") } -Validate {
   param($status, $content)
   $json = Try-ParseJson -Content $content
   $code = [string]($json.code)
-  $ok = $code -eq "EMAIL_NOT_FOUND"
+  $ok = $code -eq "OTP_REQUEST_ACCEPTED"
   return @{ ok = $ok; detail = "code=$code" }
 } -Verbose:$VerboseOutput
 

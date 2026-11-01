@@ -4,8 +4,8 @@
 - Product: Kittisap Public Site
 - Stack: Next.js (App Router), Supabase, Vercel
 - Production domains:
-  - Public: `https://kittisap.vercel.app/`
-  - Admin: `https://kittisap.vercel.app/admin`
+  - Public: `https://kittisap-admin.vercel.app/`
+  - Admin: `https://kittisap-admin.vercel.app/admin`
 
 ## 2. Goals
 - Build customer-facing website with 6 core menus.

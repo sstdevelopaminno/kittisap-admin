@@ -605,6 +605,7 @@ export function CustomerKycStartClient() {
     s.sessionExpired,
     s.success,
     s.working,
+    scanUiText.detectingFace,
     scanUiText.humanFaceRequired,
     scanUiText.moveSlightly,
     scanUiText.openingCamera,
