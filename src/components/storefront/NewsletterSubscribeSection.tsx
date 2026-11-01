@@ -52,10 +52,10 @@ export function NewsletterSubscribeSection(props: NewsletterSubscribeSectionProp
   }
 
   return (
-    <section className="mx-auto w-full max-w-7xl px-4" style={{ marginTop: "1.25rem", marginBottom: "2.2rem" }}>
-      <div className="relative overflow-hidden rounded-3xl border border-slate-300/20 bg-[linear-gradient(145deg,rgba(15,23,42,0.94),rgba(2,6,23,0.96))] p-6 shadow-[0_18px_55px_rgba(2,6,23,0.4)]">
+    <section className="mx-auto w-full max-w-[1680px] px-4 sm:px-6 xl:px-10" style={{ marginTop: "1.25rem", marginBottom: "2.2rem" }}>
+      <div className="relative overflow-hidden rounded-[28px] border border-[#d8aa5b]/30 bg-[linear-gradient(125deg,#251a0e,#111214_55%,#101010)] p-7 shadow-[0_20px_65px_rgba(0,0,0,0.4)] lg:p-12">
         <div className="pointer-events-none absolute -right-20 -top-20 h-56 w-56 rounded-full bg-amber-500/25 blur-3xl" />
-        <div className="pointer-events-none absolute -bottom-24 left-20 h-56 w-56 rounded-full bg-cyan-500/20 blur-3xl" />
+        <div className="pointer-events-none absolute -bottom-24 left-20 h-56 w-56 rounded-full bg-amber-500/10 blur-3xl" />
 
         <div className="relative grid gap-6 lg:grid-cols-[1.1fr_0.9fr] lg:items-start">
           <div>
@@ -70,7 +70,7 @@ export function NewsletterSubscribeSection(props: NewsletterSubscribeSectionProp
               value={fullName}
               onChange={(event) => setFullName(event.target.value)}
               placeholder={props.namePlaceholder}
-              className="mt-1 w-full rounded-xl border border-slate-200/20 bg-slate-950/50 px-3 py-2.5 text-sm text-slate-100 placeholder:text-slate-400/80 focus:border-cyan-300 focus:outline-none"
+              className="mt-1 w-full rounded-xl border border-slate-200/20 bg-slate-950/50 px-3 py-2.5 text-sm text-slate-100 placeholder:text-slate-400/80 focus:border-amber-300 focus:outline-none"
               maxLength={120}
               required
             />
@@ -91,7 +91,7 @@ export function NewsletterSubscribeSection(props: NewsletterSubscribeSectionProp
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="inline-flex items-center rounded-xl border border-amber-300/35 bg-amber-400/15 px-4 py-2 text-sm font-bold text-amber-100 transition hover:bg-amber-400/25 disabled:opacity-60"
+                className="inline-flex items-center rounded-xl border border-[#e8c57f] bg-gradient-to-r from-[#efcf88] to-[#ba883f] px-5 py-2.5 text-sm font-black text-[#21170b] transition hover:brightness-110 disabled:opacity-60"
               >
                 {isSubmitting ? "..." : props.ctaLabel}
               </button>
