@@ -490,14 +490,20 @@ export async function MarketingLandingPage({
         ? "ສົມທົບປະສິດທິພາບ ການບໍລິການ ແລະ ຄວາມໄວ້ວາງໃຈ"
         : whyChooseUsSettings.sectionTagline,
   );
-  // The legacy promotional banner has words baked into its pixels. A clean product
-  // photograph avoids duplicated, non-localizable text in the background.
-  // Admins can change the hero vehicle by updating the first featured product image.
-  const heroVehicle = showroomItems.find((item) => Boolean(item.coverUrl));
-  const heroImageUrl = heroVehicle?.coverUrl ?? null;
-  const heroImageAlt = heroVehicle?.title
-    ? `${heroVehicle.title} — KITTISAP ATV`
-    : "KITTISAP ATV showroom";
+  // Build a full-screen slideshow from Supabase product image galleries.
+  // The old promotional banner is deliberately excluded because it contains
+  // large words baked into the pixels. No images are copied into source code.
+  const heroSlides = showroomItems.flatMap((item) => {
+    const gallery = item.images.length > 0
+      ? item.images
+      : item.coverUrl ? [{ id: item.id, url: item.coverUrl }] : [];
+    return gallery.map((image) => ({
+      id: `${item.id}-${image.id}`,
+      src: image.url,
+      title: item.title,
+      productHref: withLocale(locale, `/products/${item.slug}`, useLocalePrefix),
+    }));
+  }).filter((slide, index, all) => all.findIndex((x) => x.src === slide.src) === index).slice(0, 10);
   const origin = "https://kittisap-admin.vercel.app";
   const structuredData = {
     "@context": "https://schema.org",
@@ -576,8 +582,7 @@ export async function MarketingLandingPage({
       <PremiumHomeHero
         settings={bannerSettings}
         locale={locale}
-        imageUrl={heroImageUrl}
-        imageAlt={heroImageAlt}
+        slides={heroSlides}
         eyebrow={localizedHeroEyebrow}
         title={localizedHeroTitle}
         description={localizedHeroDesc}
