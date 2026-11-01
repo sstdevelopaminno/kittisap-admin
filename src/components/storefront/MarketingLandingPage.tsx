@@ -492,6 +492,54 @@ export async function MarketingLandingPage({
   );
   const heroImageUrl = bannerSettings.imageUrl || showroomItems[0]?.coverUrl || null;
   const heroImageAlt = localizedHeroTitle || showroomItems[0]?.title || "Banner image";
+  const origin = "https://kittisap-admin.vercel.app";
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": `${origin}/#website`,
+        name: storefrontSettings.brandName || "KITTISAP ATV",
+        url: origin,
+        inLanguage: locale === "th" ? "th-TH" : locale === "lo" ? "lo-LA" : "en-US",
+      },
+      {
+        "@type": "Organization",
+        "@id": `${origin}/#organization`,
+        name: storefrontSettings.brandName || "KITTISAP ATV",
+        url: origin,
+        ...(storefrontSettings.storefrontLogoUrl
+          ? { logo: storefrontSettings.storefrontLogoUrl }
+          : {}),
+        contactPoint: [{
+          "@type": "ContactPoint",
+          telephone: storefrontSettings.callPhone || undefined,
+          contactType: "customer service",
+        }],
+      },
+      {
+        "@type": "ItemList",
+        name: locale === "th" ? "รถ ATV แนะนำ" : "Featured ATV models",
+        itemListElement: showroomItems.map((item, index) => ({
+          "@type": "ListItem",
+          position: index + 1,
+          url: `${origin}${withLocale(locale, `/products/${item.slug}`, useLocalePrefix)}`,
+          item: {
+            "@type": "Product",
+            name: item.title,
+            url: `${origin}${withLocale(locale, `/products/${item.slug}`, useLocalePrefix)}`,
+            ...(item.coverUrl ? { image: [item.coverUrl] } : {}),
+            offers: {
+              "@type": "Offer",
+              price: item.price,
+              priceCurrency: "THB",
+              availability: item.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+            },
+          },
+        })),
+      },
+    ],
+  };
   return (
     <Frame showOuterFrame={showOuterFrame}>
       <div
@@ -501,6 +549,7 @@ export async function MarketingLandingPage({
           color: homepageAppearance.textColor,
         }}
       >
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData).replace(/</g, "\\u003c") }} />
         <StorefrontRealtimeRefresh />
         <HomepagePromoPopup locale={locale} settings={homepagePopupSettings} />
         {showTopNav ? (
@@ -780,8 +829,7 @@ export async function MarketingLandingPage({
           © {new Date().getFullYear()} {localizedFooterTitle}
           <span className="mx-2">|</span>
           <Link href="/login" className="hover:text-amber-200">{t.footer.admin}</Link>
-          <span className="mx-2">|</span>
-          <Link href="/admin/developer" className="hover:text-amber-200">{t.footer.dev}</Link>
+
         </div>
       </footer>
       </div>
