@@ -1,25 +1,47 @@
 {
-    "name":  "Kittisap Atv",
-    "short_name":  "Kittisap Atv",
-    "description":  "Kittisap Atv Dashboard",
-    "start_url":  "/admin",
-    "scope":  "/",
-    "display":  "standalone",
-    "background_color":  "#0b1220",
-    "theme_color":  "#2563eb",
-    "lang":  "th",
-    "icons":  [
-                  {
-                      "src":  "/icons/pwa-icon-192.png",
-                      "sizes":  "192x192",
-                      "type":  "image/png",
-                      "purpose":  "any"
-                  },
-                  {
-                      "src":  "/icons/pwa-icon-512.png",
-                      "sizes":  "512x512",
-                      "type":  "image/png",
-                      "purpose":  "any"
-                  }
-              ]
+  "id": "/",
+  "name": "KITTISAP ATV | รถ ATV และรถออฟโรด",
+  "short_name": "KITTISAP ATV",
+  "description": "เลือกชมรถ ATV ดูราคา โปรโมชัน และติดตามคำสั่งซื้อ",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": [
+    "standalone",
+    "minimal-ui"
+  ],
+  "background_color": "#090b0d",
+  "theme_color": "#c99a45",
+  "lang": "th",
+  "orientation": "any",
+  "categories": [
+    "shopping",
+    "business"
+  ],
+  "icons": [
+    {
+      "src": "/icons/pwa-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/pwa-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "สินค้า ATV",
+      "short_name": "สินค้า",
+      "url": "/products"
+    },
+    {
+      "name": "ติดต่อ Kittisap",
+      "short_name": "ติดต่อ",
+      "url": "/contact"
+    }
+  ]
 }
