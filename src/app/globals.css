@@ -1975,9 +1975,9 @@ html.storefront-no-scrollbar *::-webkit-scrollbar {
 .premium-slide-vehicle img {
   object-fit: contain;
   object-position: 51% 52%;
-  /* Blend white catalogue photo backgrounds into the warm showroom lighting. */
-  mix-blend-mode: multiply;
-  filter: contrast(1.08) saturate(1.13);
+  /* Preserve genuine vehicle colours while softening white catalogue backdrops. */
+  mix-blend-mode: darken;
+  filter: contrast(1.08) saturate(1.18) brightness(1.06);
 }
 .premium-hero-slider-shade {
   background: linear-gradient(90deg, #08090a 0%, rgba(8,9,10,.97) 22%, rgba(8,9,10,.82) 39%, rgba(8,9,10,.25) 69%, rgba(8,9,10,.12)),
