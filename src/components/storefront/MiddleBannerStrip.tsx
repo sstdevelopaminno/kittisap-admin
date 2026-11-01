@@ -29,22 +29,22 @@ export function MiddleBannerStrip({ items, backgroundColor, sectionGapRem }: Mid
 
   return (
     <section
-      className="mx-auto w-full max-w-7xl px-4"
+      className="mx-auto w-full max-w-[1680px] px-4 sm:px-6 xl:px-10"
       style={{ marginTop: `${sectionGapRem}rem` }}
     >
       <div
-        className="space-y-3 overflow-hidden rounded-2xl border border-slate-400/20 p-3"
+        className="space-y-6 overflow-hidden rounded-[28px] border border-[#d3a85e]/25 p-2 sm:p-3"
         style={{ backgroundColor }}
       >
         {visibleItems.map((item) => (
-          <article key={item.id} className="overflow-hidden rounded-2xl border border-slate-300/25">
-            <div className="relative aspect-[21/6] w-full">
+          <article key={item.id} className="overflow-hidden rounded-2xl border border-[#d3a85e]/25 bg-[#08090b]">
+            <div className="relative aspect-[16/8] w-full sm:aspect-[21/8]">
               <Image
                 src={item.imageUrl}
-                alt=""
+                alt="Kittisap ATV promotional banner"
                 fill
                 sizes="100vw"
-                className="object-cover"
+                className="object-contain"
                 loading="lazy"
                 unoptimized
                 onError={() => {
