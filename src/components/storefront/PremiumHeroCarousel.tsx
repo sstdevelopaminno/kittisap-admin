@@ -28,6 +28,7 @@ export function PremiumHeroCarousel({ slides, locale, videoUrl }: Props) {
   const [foregroundReady, setForegroundReady] = useState(false);
   const [videoFailed, setVideoFailed] = useState(false);
   const rootRef = useRef<HTMLDivElement | null>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
   const touchStartRef = useRef<number | null>(null);
 
   const next = useCallback(() => {
@@ -50,6 +51,18 @@ export function PremiumHeroCarousel({ slides, locale, videoUrl }: Props) {
     const timer = window.setInterval(next, INTERVAL_MS);
     return () => window.clearInterval(timer);
   }, [activeIndex, motionOK, next, paused, interacting, hidden, slides.length]);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    if (!motionOK || hidden) {
+      video.pause();
+      return;
+    }
+    void video.play().catch(() => {
+      // Autoplay can be blocked by the browser. The poster remains visible.
+    });
+  }, [motionOK, hidden, videoUrl]);
 
   useEffect(() => {
     const onVisibilityChange = () => setHidden(document.visibilityState === "hidden");
@@ -93,6 +106,7 @@ export function PremiumHeroCarousel({ slides, locale, videoUrl }: Props) {
     return (
       <div className="premium-hero-video-shell absolute inset-0 overflow-hidden">
         <video
+          ref={videoRef}
           className="premium-hero-video-frame absolute inset-0 h-full w-full object-cover"
           src={videoUrl!}
           autoPlay={motionOK}
