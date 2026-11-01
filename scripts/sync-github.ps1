@@ -1,9 +1,9 @@
-$ErrorActionPreference = "Stop"
-
 param(
-  [string]$Branch = "master",
+  [string]$Branch = "main",
   [string]$Message = ""
 )
+
+$ErrorActionPreference = "Stop"
 
 if (-not (Test-Path ".git")) {
   throw "Run this script from the repository root."

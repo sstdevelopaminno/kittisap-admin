@@ -35,6 +35,16 @@ The easiest way to deploy your Next.js app is to use the [Vercel Platform](https
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
 
+## Project Hosting
+
+- Source repository: `https://github.com/sstdevelopaminno/kittisap-admin.git`
+- Default branch: `main`
+- Deployments must use the new Vercel account/team, not the retired legacy target.
+- The application continues to use the existing Supabase project; do not create
+  a replacement database during the GitHub/Vercel migration.
+- See `docs/deployment-ownership.md` for the authoritative platform mapping and
+  `docs/sync-and-deploy-checklist.md` for the release procedure.
+
 ## Security Notes
 
 - Request tracing, access logs, and basic bot filtering are implemented in `middleware.ts`.

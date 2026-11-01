@@ -3,6 +3,19 @@
 Use this project as the only source of truth:
 - `E:\kittisap-admin\kittisap-admin-main-latest`
 
+Platform ownership and migration status are recorded in
+`docs/deployment-ownership.md`.
+
+## Active targets
+
+- GitHub: `https://github.com/sstdevelopaminno/kittisap-admin.git`
+- Default branch: `main`
+- Vercel: use only the new `sstdevelopaminno` account/team target recorded in
+  `docs/deployment-ownership.md`
+- Supabase: keep the existing project `zbedxvzrbotwngxaktgj`
+
+Do not deploy to the legacy `parch009harmonic-hash` GitHub or Vercel targets.
+
 ## One-time setup
 
 1. Open terminal in `kittisap-admin-main-latest`
@@ -12,6 +25,10 @@ Use this project as the only source of truth:
    - `vercel login`
 4. Ensure git remote points to your repo:
    - `git remote -v`
+   - Expected origin: `https://github.com/sstdevelopaminno/kittisap-admin.git`
+5. Confirm the Vercel link before any deployment:
+   - `vercel project inspect --non-interactive`
+   - Stop if the owner/project does not match the new target.
 
 ## Remove old folders (run once as Administrator)
 
@@ -33,8 +50,11 @@ This release command runs in order:
 1. `npm run build`
 2. `git add -A`
 3. `git commit`
-4. `git push origin master`
+4. `git push origin main`
 5. `vercel deploy --prod`
+
+Do not run the release command until the new Vercel project has been linked and
+verified. GitHub-only updates remain safe through `npm run sync:github`.
 
 ## If you only want GitHub sync
 

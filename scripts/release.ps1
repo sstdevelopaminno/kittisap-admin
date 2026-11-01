@@ -1,9 +1,9 @@
-$ErrorActionPreference = "Stop"
-
 param(
-  [string]$Branch = "master",
+  [string]$Branch = "main",
   [string]$Message = ""
 )
+
+$ErrorActionPreference = "Stop"
 
 if (-not (Get-Command vercel -ErrorAction SilentlyContinue)) {
   throw "Vercel CLI not found. Install with: npm i -g vercel"
