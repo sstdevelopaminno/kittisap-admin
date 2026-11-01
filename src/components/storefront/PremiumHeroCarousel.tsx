@@ -134,13 +134,15 @@ export function PremiumHeroCarousel({ slides, locale, videoUrl }: Props) {
       ) : null}
       {(slides.length ? slides : []).map((slide, i) => {
         const selected = i === activeIndex;
+        const adjacent = i === (activeIndex + 1) % slides.length || i === (activeIndex - 1 + slides.length) % slides.length;
+        const shouldRender = selected || adjacent;
         return (
           <div
             key={slide.id}
             className={`premium-hero-slide absolute inset-0 ${selected ? "premium-hero-slide-active" : ""}`}
             aria-hidden={!selected}
           >
-            <div className="premium-slide-background absolute inset-[-4%]">
+            {shouldRender ? <div className="premium-slide-background absolute inset-[-4%]">
               <Image
                 src={slide.src}
                 alt=""
@@ -150,11 +152,11 @@ export function PremiumHeroCarousel({ slides, locale, videoUrl }: Props) {
                 className="object-cover"
                 quality={65}
               />
-            </div>
+            </div> : null}
             <div className="premium-slide-scene absolute inset-0">
               <div className="premium-slide-aura absolute inset-0" />
               <div className="premium-slide-ground absolute bottom-0 right-0" />
-              <div className="premium-slide-vehicle absolute inset-y-0 right-0">
+              {shouldRender ? <div className="premium-slide-vehicle absolute inset-y-0 right-0">
                 <Image
                   src={slide.src}
                   alt=""
@@ -165,7 +167,7 @@ export function PremiumHeroCarousel({ slides, locale, videoUrl }: Props) {
                   quality={85}
                   onLoad={() => { if (selected) setForegroundReady(true); }}
                 />
-              </div>
+              </div> : null}
             </div>
           </div>
         );
