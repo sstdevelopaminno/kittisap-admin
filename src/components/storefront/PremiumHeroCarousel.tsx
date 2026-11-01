@@ -150,7 +150,6 @@ export function PremiumHeroCarousel({ slides, locale, videoUrl }: Props) {
                 sizes="100vw"
                 priority={i === 0}
                 className="object-cover"
-                quality={65}
               />
             </div> : null}
             <div className="premium-slide-scene absolute inset-0">
@@ -164,7 +163,6 @@ export function PremiumHeroCarousel({ slides, locale, videoUrl }: Props) {
                   sizes="(max-width: 640px) 100vw, (max-width: 1100px) 87vw, 68vw"
                   className="object-contain object-center"
                   priority={i === 0}
-                  quality={85}
                   onLoad={() => { if (selected) setForegroundReady(true); }}
                 />
               </div> : null}
