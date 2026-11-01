@@ -62,7 +62,7 @@ export default function BannerSettingsClient({ locale, initialSettings, bootstra
             effectGradient: "ไล่สี",
             bgFrom: "สีพื้นหลังเริ่มต้น",
             bgTo: "สีพื้นหลังปลายทาง",
-            bannerImageUrl: "ลิงก์รูปแบนเนอร์",
+            bannerImageUrl: "ภาพแบนเนอร์รุ่นเดิม (ไม่ใช้เป็นพื้นหลังหน้าแรก)",
             uploadImage: "อัปโหลดรูปใหม่",
             uploadingImage: "กำลังอัปโหลด...",
             clearImage: "ล้างรูป",
@@ -129,7 +129,7 @@ export default function BannerSettingsClient({ locale, initialSettings, bootstra
             effectGradient: "Gradient",
             bgFrom: "Background From",
             bgTo: "Background To",
-            bannerImageUrl: "Banner Image URL",
+            bannerImageUrl: "Legacy banner image (not used as homepage background)",
             uploadImage: "Upload Image",
             uploadingImage: "Uploading...",
             clearImage: "Clear Image",
@@ -384,6 +384,15 @@ export default function BannerSettingsClient({ locale, initialSettings, bootstra
               <ColorField label={text.bgTo} value={values.backgroundTo} onChange={(v) => setField("backgroundTo", v)} />
 
               <Field label={text.bannerImageUrl} className="md:col-span-2">
+                <p className="mb-2 rounded-xl border border-amber-300/50 bg-amber-50 px-3 py-2 text-xs leading-relaxed text-amber-950">
+                  {locale === "th"
+                    ? "หน้าแรกใหม่แสดงภาพรถจริงจากรูปปกสินค้าแนะนำโดยอัตโนมัติ เพื่อไม่ให้มีตัวหนังสือฝังในรูป หากต้องการเปลี่ยนรถบนแบนเนอร์ ให้แก้ภาพปกหรือสินค้าแนะนำในเมนูสินค้า"
+                    : "The new homepage hero uses the featured ATV product cover image, not this legacy artwork. Change the first featured product or its cover photo to update the hero vehicle."}
+                  {" "}
+                  <Link href="/admin/products" className="font-extrabold underline underline-offset-2">
+                    {locale === "th" ? "จัดการสินค้า" : "Manage products"}
+                  </Link>
+                </p>
                 <input value={values.imageUrl ?? ""} onChange={(e) => setField("imageUrl", e.target.value || null)} className="input-base" placeholder="https://..." />
                 <div className="mt-2 flex flex-wrap items-center gap-2">
                   <label className="inline-flex cursor-pointer items-center rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50">
