@@ -5,6 +5,7 @@ import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { getPublicCart, PUBLIC_CART_UPDATED_EVENT } from "../../../lib/storefront/cart";
+import { InstallWebAppButton } from "./InstallWebAppButton";
 import {
   clearCustomerSessionActivity,
   isCustomerSessionExpired,
@@ -393,7 +394,7 @@ export function MarketingTopNav({ locale, useLocalePrefix, brand, logoUrl, nav, 
           <span>{brandOverride ?? brand}</span>
         </Link>
 
-        <nav className="hidden items-center gap-1 lg:flex" aria-label="Desktop top navigation">
+        <nav className="hidden items-center gap-1 xl:flex" aria-label="Desktop top navigation">
           {topMenu.map((item) => {
             const normalizedHref = normalizePath(item.href);
             const active =
@@ -415,7 +416,15 @@ export function MarketingTopNav({ locale, useLocalePrefix, brand, logoUrl, nav, 
         </nav>
 
         <div className="flex items-center gap-2">
-          <div ref={localeMenuRef} className="relative hidden lg:block">
+          <InstallWebAppButton locale={locale} />
+          <Link href={cartPath} className="relative inline-flex h-10 w-10 items-center justify-center rounded-full border border-[#d5ab60]/35 bg-[#171714] text-[#f1d69f] transition hover:border-[#e8bf76] hover:bg-[#2c2416]" aria-label={cartLabel} title={cartLabel}>
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <circle cx="9" cy="20" r="1" /><circle cx="19" cy="20" r="1" />
+              <path d="M2 3h2l2.4 11.1a2 2 0 0 0 2 1.6h10.6a2 2 0 0 0 2-1.6L22 7H5" />
+            </svg>
+            {cartQty > 0 ? <span className="absolute -right-1 -top-1 inline-flex min-w-4 items-center justify-center rounded-full bg-[#e7bd69] px-1 text-[10px] font-black text-[#21170b]">{cartQty > 99 ? "99+" : cartQty}</span> : null}
+          </Link>
+          <div ref={localeMenuRef} className="relative hidden xl:block">
             <button
               type="button"
               aria-label="Select language"
@@ -524,7 +533,7 @@ export function MarketingTopNav({ locale, useLocalePrefix, brand, logoUrl, nav, 
             aria-label={mobileOpen ? "Close menu" : "Open menu"}
             aria-expanded={mobileOpen}
             aria-controls="marketing-top-nav-mobile"
-            className="app-press inline-flex h-10 w-10 items-center justify-center rounded-xl border border-[#d5ab60]/45 bg-[#1a1814] text-[#f5d28c] lg:hidden"
+            className="app-press inline-flex h-10 w-10 items-center justify-center rounded-xl border border-[#d5ab60]/45 bg-[#1a1814] text-[#f5d28c] xl:hidden"
           >
             <span className="text-lg leading-none">{mobileOpen ? "×" : "☰"}</span>
           </button>
@@ -533,7 +542,7 @@ export function MarketingTopNav({ locale, useLocalePrefix, brand, logoUrl, nav, 
 
       <div
         id="marketing-top-nav-mobile"
-        className={`fixed inset-x-0 top-[72px] z-[95] border-t border-[#d5ab60]/25 bg-[#0d0d0c] shadow-xl transition-[opacity,transform] duration-200 lg:hidden ${
+        className={`fixed inset-x-0 top-[72px] z-[95] border-t border-[#d5ab60]/25 bg-[#0d0d0c] shadow-xl transition-[opacity,transform] duration-200 xl:hidden ${
           mobileOpen ? "pointer-events-auto translate-y-0 opacity-100" : "pointer-events-none -translate-y-1 opacity-0"
         }`}
       >
