@@ -1,6 +1,8 @@
 import { notFound, redirect } from "next/navigation";
+import type { Metadata } from "next";
 
 import type { AppLocale } from "../../../lib/i18n/locale";
+import { getHomeMetadata } from "../../../lib/seo/home-metadata";
 import { MarketingLandingPage } from "../../components/storefront/MarketingLandingPage";
 
 export const dynamic = "force-dynamic";
@@ -15,6 +17,12 @@ function normalizeLocale(input: string): AppLocale | null {
     return input;
   }
   return null;
+}
+
+export async function generateMetadata({ params }: Pick<LocalizedHomeProps, "params">): Promise<Metadata> {
+  const locale = normalizeLocale((await params).locale.toLowerCase());
+  if (!locale) notFound();
+  return getHomeMetadata(locale);
 }
 
 export default async function LocalizedHomePage({ params, searchParams }: LocalizedHomeProps) {
