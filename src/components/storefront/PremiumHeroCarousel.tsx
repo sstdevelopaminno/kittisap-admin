@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, type MouseEvent } from "react";
 
 export type CinematicHeroSlide = {
   id: string;
@@ -22,6 +22,8 @@ const INTERVAL_MS = 6800;
 export function PremiumHeroCarousel({ slides, locale, videoUrl }: Props) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [paused, setPaused] = useState(false);
+  const [interacting, setInteracting] = useState(false);
+  const [hidden, setHidden] = useState(false);
   const [motionOK, setMotionOK] = useState(false);
   const [foregroundReady, setForegroundReady] = useState(false);
   const [videoFailed, setVideoFailed] = useState(false);
@@ -44,21 +46,22 @@ export function PremiumHeroCarousel({ slides, locale, videoUrl }: Props) {
   }, []);
 
   useEffect(() => {
-    if (!motionOK || paused || slides.length < 2 || document.visibilityState === "hidden") return;
+    if (!motionOK || paused || interacting || hidden || slides.length < 2) return;
     const timer = window.setInterval(next, INTERVAL_MS);
     return () => window.clearInterval(timer);
-  }, [activeIndex, motionOK, next, paused, slides.length]);
+  }, [activeIndex, motionOK, next, paused, interacting, hidden, slides.length]);
 
   useEffect(() => {
-    const onVisibilityChange = () => setPaused(document.visibilityState === "hidden");
+    const onVisibilityChange = () => setHidden(document.visibilityState === "hidden");
+    onVisibilityChange();
     document.addEventListener("visibilitychange", onVisibilityChange);
     return () => document.removeEventListener("visibilitychange", onVisibilityChange);
   }, []);
 
   // A small client-only pointer offset creates a depth illusion without WebGL
   // or heavy 3D assets. Reduced-motion users receive a static composition.
-  const onMove = (event: React.MouseEvent<HTMLDivElement>) => {
-    if (!motionOK || event.pointerType === "touch") return;
+  const onMove = (event: MouseEvent<HTMLDivElement>) => {
+    if (!motionOK) return;
     const rect = event.currentTarget.getBoundingClientRect();
     const x = (event.clientX - rect.left) / rect.width - 0.5;
     const y = (event.clientY - rect.top) / rect.height - 0.5;
@@ -69,7 +72,7 @@ export function PremiumHeroCarousel({ slides, locale, videoUrl }: Props) {
   const onLeave = () => {
     rootRef.current?.style.setProperty("--hero-depth-x", "0px");
     rootRef.current?.style.setProperty("--hero-depth-y", "0px");
-    setPaused(false);
+    setInteracting(false);
   };
 
   const changeTo = (index: number) => {
@@ -101,10 +104,10 @@ export function PremiumHeroCarousel({ slides, locale, videoUrl }: Props) {
       aria-roledescription="carousel"
       aria-label={locale === "th" ? "ภาพรถ ATV แบบสไลด์" : "ATV showcase carousel"}
       onMouseMove={onMove}
-      onMouseEnter={() => setPaused(true)}
+      onMouseEnter={() => setInteracting(true)}
       onMouseLeave={onLeave}
-      onFocusCapture={() => setPaused(true)}
-      onBlurCapture={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) setPaused(false); }}
+      onFocusCapture={() => setInteracting(true)}
+      onBlurCapture={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) setInteracting(false); }}
       onTouchStart={(event) => { touchStartRef.current = event.touches[0]?.clientX ?? null; }}
       onTouchEnd={(event) => {
         const from = touchStartRef.current;
