@@ -54,7 +54,8 @@ This release command runs in order:
 5. `vercel deploy --prod`
 
 Do not run the release command until the new Vercel project has been linked and
-verified. GitHub-only updates remain safe through `npm run sync:github`.
+verified. The release script blocks the retired Vercel project/team IDs.
+GitHub-only updates remain safe through `npm run sync:github`.
 
 ## If you only want GitHub sync
 
