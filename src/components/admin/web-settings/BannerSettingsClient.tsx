@@ -62,7 +62,10 @@ export default function BannerSettingsClient({ locale, initialSettings, bootstra
             effectGradient: "ไล่สี",
             bgFrom: "สีพื้นหลังเริ่มต้น",
             bgTo: "สีพื้นหลังปลายทาง",
-            bannerImageUrl: "ภาพแบนเนอร์รุ่นเดิม (ไม่ใช้เป็นพื้นหลังหน้าแรก)",
+            bannerImageUrl: "URL วิดีโอหน้าแรก MP4/WebM",
+            uploadVideo: "อัปโหลดวิดีโอหน้าแรก",
+            uploadingVideo: "กำลังอัปโหลด...",
+            videoHint: "ใช้คลิป MP4/WebM ไม่เกิน 3.8 MB เล่นวนอัตโนมัติแบบปิดเสียง",
             uploadImage: "อัปโหลดรูปใหม่",
             uploadingImage: "กำลังอัปโหลด...",
             clearImage: "ล้างรูป",
@@ -129,7 +132,10 @@ export default function BannerSettingsClient({ locale, initialSettings, bootstra
             effectGradient: "Gradient",
             bgFrom: "Background From",
             bgTo: "Background To",
-            bannerImageUrl: "Legacy banner image (not used as homepage background)",
+            bannerImageUrl: "Homepage video URL (MP4/WebM)",
+            uploadVideo: "Upload hero video",
+            uploadingVideo: "Uploading video...",
+            videoHint: "Use a short compressed MP4/WebM under 3.8 MB; muted autoplay loop.",
             uploadImage: "Upload Image",
             uploadingImage: "Uploading...",
             clearImage: "Clear Image",
@@ -166,6 +172,7 @@ export default function BannerSettingsClient({ locale, initialSettings, bootstra
   const [values, setValues] = useState<WebBannerSettings>(initialSettings);
   const [isSaving, setIsSaving] = useState(false);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [isUploadingVideo, setIsUploadingVideo] = useState(false);
   const [isPreviewVisible, setIsPreviewVisible] = useState(false);
   const [status, setStatus] = useState<{ tone: "idle" | "success" | "error"; message: string | null }>({
     tone: bootstrapError ? "error" : "idle",
@@ -195,6 +202,32 @@ export default function BannerSettingsClient({ locale, initialSettings, bootstra
       setStatus({ tone: "error", message: `${text.uploadFailed}: ${error instanceof Error ? error.message : "Unknown error"}` });
     } finally {
       setIsUploadingImage(false);
+    }
+  }
+
+  async function handleVideoUpload(files: FileList | null) {
+    const file = files?.[0];
+    if (!file) return;
+    if (file.size > 3_800_000) {
+      setStatus({ tone: "error", message: "Compressed MP4/WebM must be under 3.8 MB" });
+      return;
+    }
+    setIsUploadingVideo(true);
+    setStatus({ tone: "idle", message: null });
+    try {
+      const form = new FormData();
+      form.set("file", file);
+      const response = await fetch("/api/admin/upload/hero-video", { method: "POST", body: form });
+      const result = (await response.json()) as { url?: string; error?: string };
+      if (!response.ok || !result.url) throw new Error(result.error ?? text.uploadFailed);
+      setField("imageUrl", result.url);
+      setStatus({ tone: "success", message: locale === "th"
+        ? "อัปโหลดสำเร็จ กรุณากดบันทึกการตั้งค่าเพื่อเปิดใช้วิดีโอ"
+        : "Uploaded. Click Save Settings to publish the video." });
+    } catch (error) {
+      setStatus({ tone: "error", message: error instanceof Error ? error.message : text.uploadFailed });
+    } finally {
+      setIsUploadingVideo(false);
     }
   }
 
@@ -231,6 +264,7 @@ export default function BannerSettingsClient({ locale, initialSettings, bootstra
   }
 
   const motionClass = values.imageMotion === "none" ? "" : `banner-motion-${values.imageMotion}`;
+  const isVideoSelected = Boolean(values.imageUrl && /\.(mp4|webm)(?:[?#]|$)/i.test(values.imageUrl));
   const styleClass = `banner-frame-${values.imageFrameStyle}`;
   const alignmentClass =
     values.contentAlign === "center"
@@ -331,7 +365,9 @@ export default function BannerSettingsClient({ locale, initialSettings, bootstra
                         borderRadius: `${values.imageFrameRadiusPx}px`,
                       }}
                     >
-                      {values.imageUrl ? (
+                      {isVideoSelected ? (
+                        <video key={values.imageUrl} src={values.imageUrl ?? undefined} className="aspect-[16/10] w-full object-cover" controls muted playsInline preload="metadata" />
+                      ) : values.imageUrl ? (
                         <div className="relative aspect-[16/10]">
                           <Image src={values.imageUrl} alt="Banner preview" fill className={`object-cover ${motionClass}`} unoptimized />
                         </div>
@@ -386,15 +422,20 @@ export default function BannerSettingsClient({ locale, initialSettings, bootstra
               <Field label={text.bannerImageUrl} className="md:col-span-2">
                 <p className="mb-2 rounded-xl border border-amber-300/50 bg-amber-50 px-3 py-2 text-xs leading-relaxed text-amber-950">
                   {locale === "th"
-                    ? "หน้าแรกแสดงสไลด์อัตโนมัติจากภาพสินค้าแนะนำหลายรุ่นในฐานข้อมูล (ไม่ใช้ภาพแบนเนอร์เก่าที่มีตัวหนังสือ) เปลี่ยนภาพ ลำดับรุ่น และจำนวนภาพได้จากเมนูสินค้า โดยสไลด์รองรับปุ่มเลื่อนและการปัดบนมือถือ"
-                    : "The homepage now cycles through product gallery photos for up to eight featured ATV models. Update featured models and their images under Products; the legacy text-heavy banner is not displayed."}
+                    ? "หน้าแรกใหม่จะใช้วิดีโอพื้นหลังเต็มจอ (ปิดเสียงและเล่นวน) แสงสว่างขึ้น โดยยังคงหัวข้อและปุ่มแบบ HTML สำหรับ SEO หากยังไม่มีวิดีโอจะใช้ภาพสินค้าสำรอง"
+                    : "Homepage uses a full-width video loop instead of an image carousel. Featured product photos remain fallback when the video is unavailable."}
                   {" "}
                   <Link href="/admin/products" className="font-extrabold underline underline-offset-2">
                     {locale === "th" ? "จัดการสินค้า" : "Manage products"}
                   </Link>
                 </p>
-                <input value={values.imageUrl ?? ""} onChange={(e) => setField("imageUrl", e.target.value || null)} className="input-base" placeholder="https://..." />
+                <input value={values.imageUrl ?? ""} onChange={(e) => setField("imageUrl", e.target.value || null)} className="input-base" placeholder="https://.../hero-video.mp4" />
+                <p className="mt-1 text-xs text-amber-900">{text.videoHint}</p>
                 <div className="mt-2 flex flex-wrap items-center gap-2">
+                  <label className="inline-flex cursor-pointer items-center rounded-lg border border-amber-500 bg-amber-100 px-3 py-2 text-xs font-extrabold text-amber-950 hover:bg-amber-200">
+                    {isUploadingVideo ? text.uploadingVideo : text.uploadVideo}
+                    <input type="file" accept="video/mp4,video/webm" onChange={(e) => { void handleVideoUpload(e.target.files); e.target.value = ""; }} className="hidden" disabled={isUploadingVideo} />
+                  </label>
                   <label className="inline-flex cursor-pointer items-center rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50">
                     {isUploadingImage ? text.uploadingImage : text.uploadImage}
                     <input type="file" accept="image/*" onChange={(e) => handleImageUpload(e.target.files)} className="hidden" disabled={isUploadingImage} />
